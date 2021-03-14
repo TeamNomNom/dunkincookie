@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script	src="js/pixi.min.js"></script>
+    <script>
+    let app;
+    let image;
+
+    window.onload = function(){
+        app = new PIXI.Application(
+            {
+                width: 1000,
+                height: 400,
+                background: 0xAAAAAA   
+            }
+        );
+
+        document.body.appendChild(app.view);
+       
+        app.loader.baseUrl = "pic";
+        app.loader.add("image","Background1.png");
+        app.loader.onComplete.add(startlvl);
+        app.loader.load();
+
+    }
+    
+    function gameloop(delta)
+    {
+
+    }
+
+    function startlvl() {
+        image = createbackround(app.loader.resources["image"].texture);
+        app.ticker.add(gameloop);
+    }
+
+    function createbackround(texture){
+        let tiling = new PIXI.TilingSprite(texture,1000,400);
+        tiling.position.set(0,0);
+        app.stage.addChild(tiling);
+        return tiling;
+    }
+
+    
+    </script>
+</head>
+<body>
+</body>
+</html>
