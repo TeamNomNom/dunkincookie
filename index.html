@@ -9,39 +9,75 @@
     <script>
     let app;
     let image;
+    let player;
+    let curve; 
 
-    window.onload = function(){
+    window.onload = function()
+    {
         app = new PIXI.Application(
             {
                 width: 1000,
-                height: 400,
-                background: 0xAAAAAA   
+                height: 400,   
             }
         );
 
         document.body.appendChild(app.view);
-       
-        app.loader.baseUrl = "pic";
-        app.loader.add("image","Background1.png");
+
+        app.loader.add("image","pic/Background1.png");
         app.loader.onComplete.add(startlvl);
         app.loader.load();
-        }
+
+
+
+    }
+
     function gameloop(delta)
     {
+        if(player.x > app.view.width || player.y > app.view.height ||
+            player.x < 0 || player.y < 0)
+        {
+            player.x = app.view.width / 2;
+            player.y = app.view.height / 2;
+        }
 
     }
 
-    function startlvl() {
+    function startlvl()
+    {
         image = createbackround(app.loader.resources["image"].texture);
+        player = createplayer();
+        app.stage.interactive = true;
+        app.stage.on("pointermove",moveplayer);
         app.ticker.add(gameloop);
+
     }
 
-    function createbackround(texture){
+    function createbackround(texture)
+    {
         let tiling = new PIXI.TilingSprite(texture,1000,400);
         tiling.position.set(0,0);
         app.stage.addChild(tiling);
         return tiling;
     }
+
+
+    function createplayer()
+    {
+        player = new PIXI.Sprite.from("pic/player.png");
+        player.anchor.set(0.5);
+        player.x = app.view.width / 2;
+        player.y = app.view.height / 2;
+        app.stage.addChild(player); 
+        return player
+    }
+
+    function moveplayer(event)
+    {
+        let positon = event.data.global;
+        player.x = positon.x;
+        player.y = positon.y;
+    }
+
 
     
     </script>
