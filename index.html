@@ -10,7 +10,9 @@
     let app;
     let image;
     let player;
-    let curve; 
+    let enemy;
+    let playerradius = 35;
+ 
 
     window.onload = function()
     {
@@ -33,8 +35,8 @@
 
     function gameloop(delta)
     {
-        if(player.x > app.view.width || player.y > app.view.height ||
-            player.x < 0 || player.y < 0)
+        if(player.x > app.view.width - playerradius || player.y > app.view.height - playerradius ||
+            player.x < playerradius || player.y < playerradius)
         {
             player.x = app.view.width / 2;
             player.y = app.view.height / 2;
@@ -46,10 +48,8 @@
     {
         image = createbackround(app.loader.resources["image"].texture);
         player = createplayer();
-        app.stage.interactive = true;
-        app.stage.on("pointermove",moveplayer);
+        enemy = createenemy();
         app.ticker.add(gameloop);
-
     }
 
     function createbackround(texture)
@@ -66,10 +66,27 @@
         player = new PIXI.Sprite.from("pic/player1.png");
         player.anchor.set(0.5);
         player.scale.set(0.22,0.22);
-        player.x = randnum(0, app.view.width);
-        player.y = randnum(0, app.view.height);
-        app.stage.addChild(player); 
+        player.x = randnum(playerradius, app.view.width - playerradius);
+        player.y = randnum(playerradius, app.view.height - playerradius);
+        app.stage.interactive = true;
+        app.stage.on("pointermove",moveplayer);
+        app.stage.addChild(player);
         return player
+    }
+
+
+    function createenemy()
+    {
+        for(let i = 0; i < 3; i++)
+        {
+            enemy = new PIXI.Sprite.from("pic/Enemie1.png");
+            enemy.anchor.set(0.5);
+            enemy.scale.set(randnum(0.1, 0.25));
+            enemy.x = randnum(45, app.view.width - 40);
+            enemy.y = randnum(45, app.view.height - 40);
+            app.stage.addChild(enemy); 
+        }
+        return enemy
     }
 
     function moveplayer(event)
