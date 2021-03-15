@@ -63,10 +63,11 @@
 
     function createplayer()
     {
-        player = new PIXI.Sprite.from("pic/player.png");
+        player = new PIXI.Sprite.from("pic/player1.png");
         player.anchor.set(0.5);
-        player.x = app.view.width / 2;
-        player.y = app.view.height / 2;
+        player.scale.set(0.22,0.22);
+        player.x = randnum(0, app.view.width);
+        player.y = randnum(0, app.view.height);
         app.stage.addChild(player); 
         return player
     }
@@ -74,8 +75,13 @@
     function moveplayer(event)
     {
         let positon = event.data.global;
-        player.x = positon.x;
-        player.y = positon.y;
+            player.x = positon.x;
+            player.y = positon.y;
+    }
+
+    function randnum(min, max)
+    {
+        return Math.random() * (max - min) + min;
     }
 
 
