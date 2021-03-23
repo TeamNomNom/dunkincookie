@@ -1,8 +1,10 @@
 let app;
 let player;
-let playerSpeed = 5;
+let playerSpeed = 1;
 let playerRadius = 35;
 let enimieRadius = 30;
+let isClick = false;
+let notClick = false;
 
 
 class Player extends PIXI.Sprite{
@@ -77,6 +79,7 @@ window.onload = function() {
     app.loader.add("player","pic/Player1.png");
     app.loader.add("enemie","pic/enemie.png");
     app.loader.add("backgraound","pic/Background1.png");
+    app.loader.add("title","pic/Titel.png");
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
     
@@ -84,11 +87,20 @@ window.onload = function() {
 
 function Initialisation(){
     console.count("finish loading");
-    createBackground();
-    createPlayer();
-    createEnemie();
+    title = new PIXI.Sprite(app.loader.resources["title"].texture);
+    button = createRect(app.view.width,app.view.height,200,100);
+    const font = new PIXI.Text('START');
+    font.anchor.set(0.5);
+    font.position.set(app.screen.width / 2, app.screen.height / 2);
+    let text = new PIXI.Text('Start',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
+    text.anchor.set(0.5);
+    text.position.x = app.screen.width / 2;
+    text.position.y = app.view.height / 2;
 
-    app.ticker.add(gameloop);
+    app.stage.addChild(title);
+    app.stage.addChild(button);
+    app.stage.addChild(text);
+
 }
 
 function gameloop(delta){
@@ -122,3 +134,61 @@ function random(min, max)
 {
     return Math.random() * (max - min) + min;
 }
+
+
+function createRect(x, y, width, height)
+{
+    let button = new PIXI.Graphics();
+    button.beginFill(0xffffff);
+    button.drawRect(x,y,width,height);
+    button.endFill();
+    button.pivot.x = x/2 + width/2;
+    button.pivot.y = y/2 + height/2;
+    button.interactive = true;
+    button.buttonMode = true;
+
+    button.on("pointerup",onButtonUp);
+    button.on("pointerdown",onButtonDown);
+    button.on("pointerover",onButtonOver);
+    button.on("pointerout",onButtonOut);
+
+    return button;
+}
+
+
+function onButtonDown() {
+    isClick = true;
+    this.tint = 0xffffff;  
+}
+
+function onButtonUp() {
+    notClick = false;
+    if (isClick) {
+        createBackground();
+        createPlayer();
+        createEnemie();
+    
+        app.ticker.add(gameloop);    
+    } else {
+        this.tint = 0xffffff;  
+    }
+
+}
+
+function onButtonOver() {
+    isClick = true;
+    if (notClick) {
+        return;
+    }
+    this.tint = 0x68d263;
+}
+
+function onButtonOut() {
+    isClick = false;
+    if (notClick) {
+        return;
+    }
+    this.tint = 0xffffff;  
+
+}
+
