@@ -1,110 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+    
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <script	src="js/pixi.min.js"></script>
-    <script>
-    let app;
-    let image;
-    let player;
-    let enemy;
-    let playerradius = 35;
- 
-
-    window.onload = function()
-    {
-        app = new PIXI.Application(
-            {
-                width: 1000,
-                height: 400,   
-            }
-        );
-
-        document.body.appendChild(app.view);
-
-        app.loader.add("image","pic/Background1.png");
-        app.loader.onComplete.add(startlvl);
-        app.loader.load();
-
-
-
-    }
-
-    function gameloop(delta)
-    {
-        if(player.x > app.view.width - playerradius || player.y > app.view.height - playerradius ||
-            player.x < playerradius || player.y < playerradius)
-        {
-            player.x = app.view.width / 2;
-            player.y = app.view.height / 2;
-        }
-
-    }
-
-    function startlvl()
-    {
-        image = createbackround(app.loader.resources["image"].texture);
-        player = createplayer();
-        enemy = createenemy();
-        app.ticker.add(gameloop);
-    }
-
-    function createbackround(texture)
-    {
-        let tiling = new PIXI.TilingSprite(texture,1000,400);
-        tiling.position.set(0,0);
-        app.stage.addChild(tiling);
-        return tiling;
-    }
-
-
-    function createplayer()
-    {
-        player = new PIXI.Sprite.from("pic/player1.png");
-        player.anchor.set(0.5);
-        player.scale.set(0.22,0.22);
-        player.x = randnum(playerradius, app.view.width - playerradius);
-        player.y = randnum(playerradius, app.view.height - playerradius);
-        app.stage.interactive = true;
-        app.stage.on("pointermove",moveplayer);
-        app.stage.addChild(player);
-        return player
-    }
-
-
-    function createenemy()
-    {
-        for(let i = 0; i < 3; i++)
-        {
-            enemy = new PIXI.Sprite.from("pic/Enemie1.png");
-            enemy.anchor.set(0.5);
-            enemy.scale.set(randnum(0.1, 0.25));
-            enemy.x = randnum(45, app.view.width - 40);
-            enemy.y = randnum(45, app.view.height - 40);
-            app.stage.addChild(enemy); 
-        }
-        return enemy
-    }
-
-    function moveplayer(event)
-    {
-        let positon = event.data.global;
-            player.x = positon.x;
-            player.y = positon.y;
-    }
-
-    function randnum(min, max)
-    {
-        return Math.random() * (max - min) + min;
-    }
-
-
-    
-    </script>
+   
 </head>
 <body>
+    <script	src="js/pixi.min.js"></script>
+   <script src="start.js"> </script>
+
 </body>
 </html>
