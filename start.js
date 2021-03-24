@@ -37,11 +37,11 @@ class Player extends PIXI.Sprite{
 }
 
 class Enemie extends PIXI.Sprite{
-    constructor(x = 0, y = 0, texture, hasHit, gravitation = 5)
+    constructor(x = 0, y = 0, texture, hasHit, gravitation = 2)
     {
         super(texture);
-        this.anchor.set(0.5);
-        this.scale.set(random(1.5, 2,5));
+        this.anchor.set(0.4);
+        this.scale.set(random(0.22, 0.32));
         this.hasHit = false;
         this.gravitation = gravitation;
         this.x = x;
@@ -119,7 +119,7 @@ function createPlayer(){
 function createEnemie(){
     x = random(enimieRadius, app.view.width - enimieRadius);
     y = random(enimieRadius, app.view.height - enimieRadius);
-    enemie = new Enemie(x,y, app.loader.resources["enemie"].texture,false, 3);
+    enemie = new Enemie(x,y, app.loader.resources["enemie"].texture,false, 2);
     app.stage.addChild(enemie);
 
 }
