@@ -21,6 +21,8 @@ window.onload = function() {
     app.loader.add("enemy", "pic/enemy.png");
     app.loader.add("background", "pic/Background1.png");
     app.loader.add("title", "pic/Background1.png");
+    app.loader.add("start", "pic/Start1.png");
+    app.loader.add("startOnClick", "pic/Start2.png");
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
     
@@ -83,23 +85,24 @@ function random(min, max)
 
 function createStartButton()
 {
-    start = PIXI.Texture.from('pic/Start1.png');
-    startOnClick = PIXI.Texture.from('pic/Start1.png');
+    start = app.loader.resources['start'].texture;
+    startOnClick = app.loader.resources['startOnClick'].texture;
 
-    let button= new PIXI.Sprite(start);
+    let button = new PIXI.Sprite(start);
 
     button.anchor.set(0.5);
-    button.scale.set(1);
+    button.scale.set(0.6);
 
-    button.position.x = app.view.width / 2;
-    button.position.y = app.view.height / 2;
+    button.x = app.renderer.width / 2;
+    button.y = app.renderer.height / 2;
 
     button.interactive = true;
+    button.buttonMode = true;
 
     button.on("pointerup", onStartButtonUp);
     button.on("pointerdown", function() {start_isClick = true;});
-    button.on("pointerover", function() {this.setTexture(startOnClick);});
-    button.on("pointerout", function() {this.setTexture(start);});
+    button.on("pointerover", function() {this.texture = startOnClick;});
+    button.on("pointerout", function() {this.texture = start;});
 
     return button;
 }
