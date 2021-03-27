@@ -14,7 +14,8 @@ class Player extends PIXI.Sprite{
         this.anchor.set(0.5);
         this.scale.set(0.22);
         this.isHit = false;
-        this.speed = speed;
+        this.speed_x = speed;
+        this.speed_y = speed;
         this.x = x;
         this.y = y;
     }
@@ -24,12 +25,15 @@ class Player extends PIXI.Sprite{
     }
 
     move(){
-        this.x = this.x + this.speed;
-        this.y = this.y + this.speed;
-        if(this.x > app.view.width - playerRadius || this.y > app.view.height - playerRadius ||
-            this.x < playerRadius || this.y < playerRadius)
+        this.x = this.x + this.speed_x;
+        this.y = this.y + this.speed_y;
+        if(this.x > app.view.width - playerRadius || this.x < playerRadius)
         {
-            this.speed = -this.speed;
+            this.speed_x = -this.speed_x;
+        }
+        if(this.y > app.view.height - playerRadius || this.y < playerRadius)
+        {
+            this.speed_y = -this.speed_y;
         }
 
     }
