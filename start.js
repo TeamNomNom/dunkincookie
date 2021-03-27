@@ -20,6 +20,8 @@ window.onload = function() {
     app.loader.add("enemy", "pic/enemy.png");
     app.loader.add("background", "pic/Background1.png");
     app.loader.add("title", "pic/Background1.png");
+    app.loader.add("start", "pic/Start1.png");
+    app.loader.add("startOnClick", "pic/Start2.png");
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
     
@@ -28,20 +30,17 @@ window.onload = function() {
 function Initialisation(){
     console.count("finish loading");
     start_title = new PIXI.Sprite(app.loader.resources["title"].texture);
+    Start = new PIXI.Sprite(app.loader.resources["start"].texture);
+    StartOnClick = new PIXI.Sprite(app.loader.resources["startOnClick"].texture);
     
+    button = createStartButton();
 
-    start_button = createStartButton(app.view.width, app.view.height, 200, 100);
     const font = new PIXI.Text('START');
     font.anchor.set(0.5);
     font.position.set(app.screen.width / 2, app.screen.height / 2);
-    var start_text = new PIXI.Text('Start', {fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
-    start_text.anchor.set(0.5);
-    start_text.position.x = app.screen.width / 2;
-    start_text.position.y = app.view.height / 2;
-
+    
     app.stage.addChild(start_title);
-    app.stage.addChild(start_button);
-    app.stage.addChild(start_text);
+    app.stage.addChild(button);
 
 }
 
@@ -77,17 +76,9 @@ function random(min, max)
 }
 
 
-function createStartButton(x, y, width, height)
+function createStartButton()
 {
-    var button = new PIXI.Graphics();
-    button.beginFill(0xffffff);
-    button.drawRect(x, y, width, height);
-    button.endFill();
-    button.pivot.x = x/2 + width/2;
-    button.pivot.y = y/2 + height/2;
-    button.interactive = true;
-    button.buttonMode = true;
-
+    
     button.on("pointerup", onStartButtonUp);
     button.on("pointerdown", function() {start_isClick = true;});
     button.on("pointerover", function() {this.tint = 0x68d263;});
