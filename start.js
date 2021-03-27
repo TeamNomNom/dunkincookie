@@ -36,7 +36,7 @@ class Player extends PIXI.Sprite{
 
 }
 
-class Enemie extends PIXI.Sprite{
+class Enemy extends PIXI.Sprite{
     constructor(x = 0, y = 0, texture, hasHit, gravitation = 2)
     {
         super(texture);
@@ -76,10 +76,10 @@ window.onload = function() {
 
     document.body.appendChild(app.view);
 
-    app.loader.add("player","pic/Player1.png");
-    app.loader.add("enemie","pic/enemie.png");
-    app.loader.add("backgraound","pic/Background1.png");
-    app.loader.add("title","pic/Titel.png");
+    app.loader.add("player", "pic/Player1.png");
+    app.loader.add("enemy", "pic/enemy.png");
+    app.loader.add("backgraound", "pic/Background1.png");
+    app.loader.add("title", "pic/Titel.png");
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
     
@@ -88,11 +88,11 @@ window.onload = function() {
 function Initialisation(){
     console.count("finish loading");
     title = new PIXI.Sprite(app.loader.resources["title"].texture);
-    button = createRect(app.view.width,app.view.height,200,100);
+    button = createRect(app.view.width, app.view.height, 200, 100);
     const font = new PIXI.Text('START');
     font.anchor.set(0.5);
     font.position.set(app.screen.width / 2, app.screen.height / 2);
-    let text = new PIXI.Text('Start',{fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
+    let text = new PIXI.Text('Start', {fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
     text.anchor.set(0.5);
     text.position.x = app.screen.width / 2;
     text.position.y = app.view.height / 2;
@@ -105,22 +105,22 @@ function Initialisation(){
 
 function gameloop(delta){
     player.move();
-    enemie.move();
+    enemy.move();
 
 }
 
 function createPlayer(){
     x = random(playerRadius, app.view.width - playerRadius);
     y = random(playerRadius, app.view.height - playerRadius);
-    player = new Player(x,y, app.loader.resources["player"].texture,false,playerSpeed);
+    player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed);
     app.stage.addChild(player);
 
 }
-function createEnemie(){
+function createEnemy(){
     x = random(enimieRadius, app.view.width - enimieRadius);
     y = random(enimieRadius, app.view.height - enimieRadius);
-    enemie = new Enemie(x,y, app.loader.resources["enemie"].texture,false, 2);
-    app.stage.addChild(enemie);
+    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, 2);
+    app.stage.addChild(enemy);
 
 }
 
@@ -140,17 +140,17 @@ function createRect(x, y, width, height)
 {
     let button = new PIXI.Graphics();
     button.beginFill(0xffffff);
-    button.drawRect(x,y,width,height);
+    button.drawRect(x, y, width, height);
     button.endFill();
     button.pivot.x = x/2 + width/2;
     button.pivot.y = y/2 + height/2;
     button.interactive = true;
     button.buttonMode = true;
 
-    button.on("pointerup",onButtonUp);
-    button.on("pointerdown",onButtonDown);
-    button.on("pointerover",onButtonOver);
-    button.on("pointerout",onButtonOut);
+    button.on("pointerup", onButtonUp);
+    button.on("pointerdown", onButtonDown);
+    button.on("pointerover", onButtonOver);
+    button.on("pointerout", onButtonOut);
 
     return button;
 }
@@ -166,7 +166,7 @@ function onButtonUp() {
     if (isClick) {
         createBackground();
         createPlayer();
-        createEnemie();
+        createEnemy();
     
         app.ticker.add(gameloop);    
     } else {
