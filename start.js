@@ -40,7 +40,7 @@ class Enemy extends PIXI.Sprite{
     constructor(x = 0, y = 0, texture, hasHit, gravitation = 2)
     {
         super(texture);
-        this.anchor.set(0.41,0.42);
+        this.anchor.set(0.5);
         this.scale.set(random(0.2, 0.3));
         this.hasHit = false;
         this.gravitation = gravitation;
@@ -79,7 +79,7 @@ window.onload = function() {
     app.loader.add("player", "pic/Player1.png");
     app.loader.add("enemy", "pic/enemy.png");
     app.loader.add("backgraound", "pic/Background1.png");
-    app.loader.add("title", "pic/Titel.png");
+    app.loader.add("title", "pic/Background1.png");
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
     
@@ -88,6 +88,8 @@ window.onload = function() {
 function Initialisation(){
     console.count("finish loading");
     title = new PIXI.Sprite(app.loader.resources["title"].texture);
+    
+
     button = createRect(app.view.width, app.view.height, 200, 100);
     const font = new PIXI.Text('START');
     font.anchor.set(0.5);
@@ -164,11 +166,16 @@ function onButtonDown() {
 function onButtonUp() {
     notClick = false;
     if (isClick) {
+
         createBackground();
         createPlayer();
         createEnemy();
-    
-        app.ticker.add(gameloop);    
+
+        app.ticker.add(gameloop);  
+
+        app.stage.removeChild(title);
+        app.stage.removeChild(button);
+        app.stage.removeChild(text);  
     } else {
         this.tint = 0xffffff;  
     }
