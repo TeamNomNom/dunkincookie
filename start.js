@@ -80,6 +80,8 @@ window.onload = function() {
     app.loader.add("enemy", "pic/enemy.png");
     app.loader.add("backgraound", "pic/Background1.png");
     app.loader.add("title", "pic/Background1.png");
+    app.loader.add("start", "pic/Start1.png");
+    app.loader.add("startOnClick", "pic/Start2.png");
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
     
@@ -88,20 +90,20 @@ window.onload = function() {
 function Initialisation(){
     console.count("finish loading");
     title = new PIXI.Sprite(app.loader.resources["title"].texture);
+    Start = new PIXI.Sprite(app.loader.resources["start"].texture);
+    StartOnClick = new PIXI.Sprite(app.loader.resources["startOnClick"].texture);
+    
+    button = createButton();
+
     
 
-    button = createRect(app.view.width, app.view.height, 200, 100);
+
     const font = new PIXI.Text('START');
     font.anchor.set(0.5);
     font.position.set(app.screen.width / 2, app.screen.height / 2);
-    let text = new PIXI.Text('Start', {fontFamily : 'Arial', fontSize: 24, fill : 0xff1010, align : 'center'});
-    text.anchor.set(0.5);
-    text.position.x = app.screen.width / 2;
-    text.position.y = app.view.height / 2;
-
+    
     app.stage.addChild(title);
     app.stage.addChild(button);
-    app.stage.addChild(text);
 
 }
 
@@ -138,16 +140,9 @@ function random(min, max)
 }
 
 
-function createRect(x, y, width, height)
+function createButton()
 {
-    let button = new PIXI.Graphics();
-    button.beginFill(0xffffff);
-    button.drawRect(x, y, width, height);
-    button.endFill();
-    button.pivot.x = x/2 + width/2;
-    button.pivot.y = y/2 + height/2;
-    button.interactive = true;
-    button.buttonMode = true;
+   
 
     button.on("pointerup", onButtonUp);
     button.on("pointerdown", onButtonDown);
