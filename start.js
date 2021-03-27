@@ -1,9 +1,11 @@
 var app;
 var player;
-var playerSpeed = 1;
+var playerSpeed = 0;
+var enemySpeed = 1;
 var playerRadius = 35;
 var enemyRadius = 30;
 var start_isClick = false;
+var markers = []
 
 window.onload = function() {
     app = new PIXI.Application({
@@ -36,13 +38,25 @@ function Initialisation(){
 
 }
 
+function setmarker(){
+    if (markers.length < 10)
+    {
+        let x = app.renderer.plugins.interaction.mouse.global.x
+        let y = app.renderer.plugins.interaction.mouse.global.y
+        let pos = [x,y]
+        markers.push(pos)
+    }
+    else
+        player.setPos()
+}
+
 function gameloop(delta){
     player.move();
     enemy.move();
 }
 
 function createPlayer(){
-    x = random(playerRadius, app.view.width - playerRadius);
+    x = random(playerRadius, (app.view.width / 5 - playerRadius));
     y = random(playerRadius, app.view.height - playerRadius);
     player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed, playerSpeed);
     app.stage.addChild(player);
@@ -51,9 +65,8 @@ function createPlayer(){
 function createEnemy(){
     x = random(enemyRadius, app.view.width - enemyRadius);
     y = random(enemyRadius, app.view.height - enemyRadius);
-    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, 2, 2);
+    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, enemySpeed, enemySpeed);
     app.stage.addChild(enemy);
-
 }
 
 function createBackground()
@@ -86,7 +99,7 @@ function createStartButton()
     button.on("pointerup", onStartButtonUp);
     button.on("pointerdown", function() {start_isClick = true;});
     button.on("pointerover", function() {this.setTexture(startOnClick);});
-    button.on("pointerout", function() {this.this.setTexture(start);});
+    button.on("pointerout", function() {this.setTexture(start);});
 
     return button;
 }
@@ -102,4 +115,5 @@ function onStartButtonUp() {
 
     app.stage.removeChild(start_title);
     app.stage.removeChild(start_button);
+    app.renderer.plugins.interaction.on("pointerup", setmarker);
 }
