@@ -2,20 +2,20 @@ let app;
 let player;
 let playerSpeed = 1;
 let playerRadius = 35;
-let enimieRadius = 30;
+let enemyRadius = 30;
 let isClick = false;
 let notClick = false;
 
 
 class Player extends PIXI.Sprite{
-    constructor(x = 0, y = 0, texture, isHit, speed = 5)
+    constructor(x = 0, y = 0, texture, isHit, speed_x = 5, speed_y = 5)
     {
         super(texture);
         this.anchor.set(0.5);
         this.scale.set(0.22);
         this.isHit = false;
-        this.speed_x = speed;
-        this.speed_y = speed;
+        this.speed_x = speed_x;
+        this.speed_y = speed_y;
         this.x = x;
         this.y = y;
     }
@@ -28,26 +28,23 @@ class Player extends PIXI.Sprite{
         this.x = this.x + this.speed_x;
         this.y = this.y + this.speed_y;
         if(this.x > app.view.width - playerRadius || this.x < playerRadius)
-        {
             this.speed_x = -this.speed_x;
-        }
         if(this.y > app.view.height - playerRadius || this.y < playerRadius)
-        {
             this.speed_y = -this.speed_y;
-        }
 
     }
 
 }
 
 class Enemy extends PIXI.Sprite{
-    constructor(x = 0, y = 0, texture, hasHit, gravitation = 2)
+    constructor(x = 0, y = 0, texture, hasHit, speed_x , speed_y)
     {
         super(texture);
         this.anchor.set(0.5);
         this.scale.set(random(0.2, 0.3));
         this.hasHit = false;
-        this.gravitation = gravitation;
+        this.speed_x = speed_x;
+        this.speed_y = speed_y;
         this.x = x;
         this.y = y;
     }
@@ -57,13 +54,12 @@ class Enemy extends PIXI.Sprite{
     }
 
     move(){
-        this.x = this.x + this.gravitation;
-        this.y = this.y + this.gravitation;
-        if(this.x > app.view.width - enimieRadius || this.y > app.view.height - enimieRadius ||
-            this.x < enimieRadius || this.y < enimieRadius)
-        {
-            this.gravitation = -this.gravitation;
-        }
+        this.x = this.x + this.speed_x;
+        this.y = this.y + this.speed_y;
+        if(this.x > app.view.width - enemyRadius || this.x < enemyRadius)
+            this.speed_x = -this.speed_x;
+        if(this.y > app.view.height - enemyRadius || this.y < enemyRadius)
+            this.speed_y = -this.speed_y;
 
     }
 
@@ -118,14 +114,14 @@ function gameloop(delta){
 function createPlayer(){
     x = random(playerRadius, app.view.width - playerRadius);
     y = random(playerRadius, app.view.height - playerRadius);
-    player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed);
+    player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed, playerSpeed);
     app.stage.addChild(player);
 
 }
 function createEnemy(){
-    x = random(enimieRadius, app.view.width - enimieRadius);
-    y = random(enimieRadius, app.view.height - enimieRadius);
-    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, 2);
+    x = random(enemyRadius, app.view.width - enemyRadius);
+    y = random(enemyRadius, app.view.height - enemyRadius);
+    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, 2, 2);
     app.stage.addChild(enemy);
 
 }
