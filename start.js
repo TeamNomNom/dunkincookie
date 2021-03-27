@@ -5,7 +5,6 @@ var playerRadius = 35;
 var enemyRadius = 30;
 var start_isClick = false;
 
-
 window.onload = function() {
     app = new PIXI.Application({
 
@@ -20,8 +19,6 @@ window.onload = function() {
     app.loader.add("enemy", "pic/enemy.png");
     app.loader.add("background", "pic/Background1.png");
     app.loader.add("title", "pic/Background1.png");
-    app.loader.add("start", "pic/Start1.png");
-    app.loader.add("startOnClick", "pic/Start2.png");
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
     
@@ -30,17 +27,12 @@ window.onload = function() {
 function Initialisation(){
     console.count("finish loading");
     start_title = new PIXI.Sprite(app.loader.resources["title"].texture);
-    Start = new PIXI.Sprite(app.loader.resources["start"].texture);
-    StartOnClick = new PIXI.Sprite(app.loader.resources["startOnClick"].texture);
-    
-    button = createStartButton();
 
-    const font = new PIXI.Text('START');
-    font.anchor.set(0.5);
-    font.position.set(app.screen.width / 2, app.screen.height / 2);
-    
+    start_button = createStartButton();
+
+  
     app.stage.addChild(start_title);
-    app.stage.addChild(button);
+    app.stage.addChild(start_button);
 
 }
 
@@ -78,11 +70,23 @@ function random(min, max)
 
 function createStartButton()
 {
-    
+    start = PIXI.Texture.from('pic/Start1.png');
+    startOnClick = PIXI.Texture.from('pic/Start1.png');
+
+    let button= new PIXI.Sprite(start);
+
+    button.anchor.set(0.5);
+    button.scale.set(1);
+
+    button.position.x = app.view.width / 2;
+    button.position.y = app.view.height / 2;
+
+    button.interactive = true;
+
     button.on("pointerup", onStartButtonUp);
     button.on("pointerdown", function() {start_isClick = true;});
-    button.on("pointerover", function() {this.tint = 0x68d263;});
-    button.on("pointerout", function() {this.tint = 0xffffff;});
+    button.on("pointerover", function() {this.setTexture(startOnClick);});
+    button.on("pointerout", function() {this.this.setTexture(start);});
 
     return button;
 }
@@ -98,5 +102,4 @@ function onStartButtonUp() {
 
     app.stage.removeChild(start_title);
     app.stage.removeChild(start_button);
-    app.stage.removeChild(start_text);  
 }
