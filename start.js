@@ -40,8 +40,8 @@ class Enemie extends PIXI.Sprite{
     constructor(x = 0, y = 0, texture, hasHit, gravitation = 2)
     {
         super(texture);
-        this.anchor.set(0.4);
-        this.scale.set(random(0.22, 0.32));
+        this.anchor.set(0.41,0.42);
+        this.scale.set(random(0.2, 0.3));
         this.hasHit = false;
         this.gravitation = gravitation;
         this.x = x;
