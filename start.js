@@ -53,6 +53,7 @@ function setmarker(){
 }
 
 function gameloop(delta){
+    
     player.move();
     enemy.move();
 }
