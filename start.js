@@ -30,7 +30,7 @@ window.onload = function() {
     app.loader.add("start", "pic/Start1.png");
     app.loader.add("startOnClick", "pic/Start2.png");
     app.loader.add("circle", "pic/Circle.png")
-    app.loader.add("goal", "pic/ziel.png")
+    app.loader.add("goal", "pic/Goal.png")
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
     
@@ -71,7 +71,7 @@ function createEnemy(){
 }
 
 function createGoal(){
-    x = random(playerRadius, app.view.width - (app.view.width / 5 - playerRadius));
+    x = random(app.view.width - (app.view.width / 5 - playerRadius), app.view.width);
     y = random(playerRadius, app.view.height - playerRadius);
     goal = new Goal(x, y, app.loader.resources["goal"].texture, false);
     app.stage.addChild(goal);
@@ -79,7 +79,7 @@ function createGoal(){
 }
 
 function setmarker(){    
-    if (activateMarkersetting && markers.length < 3)
+    if (activateMarkersetting && markers.length < 5)
     {
         let x = app.renderer.plugins.interaction.mouse.global.x;
         let y = app.renderer.plugins.interaction.mouse.global.y;
@@ -90,72 +90,65 @@ function setmarker(){
     else
     {
         activateMarkersetting = true;
-        if (markers.length == 3){
-            drawSpline();
+        if (markers.length == 5){
+            drawAllSplines();
         }
     }
 }
 
 function drawAllSplines()
 {
-    for (let i = 0; i < markers.length; i++)
+    for (let i = 0; i <= markers.length; i++)
     {
-        if (i <= 1)
-        {
-            p0_x = player.x;
-            p0_y = player.y;
-        }
-        else
-        {
-            p1_x = markers[i-2].x;
-            p1_y = markers[i-2].y;
+        //P0
+        if (i == 0 || i == 1){
+            p0 = [player.x, player.y];
+        } else {
+            p0 = [markers[i-2].x, markers[i-2].y];
         }
 
-        if (i == 0)
-        {
-            p1_x = player.x;
-            p1_y = player.y;
-        }
-        else
-        {
-            p1_x = markers[i-1].x;
-            p1_y = markers[i-1].y;
+        //P1
+        if (i == 0) {
+            p1 = [player.x, player.y];
+        } else {
+            p1 = [markers[i-1].x, markers[i-1].y];
         }
 
-        if (i + 1 == markers.length)
-        {
-            //goal
-        }
-        else
-        {            
-            p2_x = markers[i].x;
-            p2_y = markers[i].y;
+        //P2
+        if (i == markers.length) {
+            p2 = [goal.x, goal.y];
+        } else {            
+            p2 = [markers[i].x, markers[i].y];
         }
 
+        //P3
+        if (i + 1 == markers.length || i == markers.length) {
+            p3 = [goal.x, goal.y];
+        } else {            
+            p3 = [markers[i+1].x, markers[i+1].y];
+        }
         
-
-        if (i + 1 >= markers.length)
-        {
-            //goal
-        }
-        else
-        {            
-            p3_x = markers[i+1].x;
-            p3_y = markers[i+1].y;
-        }
-
+        drawSingleSpline(p0, p1, p2, p3)
     }
 }
 
-function drawSingleSpline(p0,p1,p2,p2)
+function drawSingleSpline(p0, p1, p2, p3)
 {
     if (markers.length > 2)
     {
-        stepcount = 30;
+        stepcount = 60;
+        let max_x = app.view.width;
+        let max_y = app.view.height;
+        let scale_x =  (p1[0] - p2[0]);
+        let scale_y =  (p1[1] - p2[1]);
+        let hypertenuse = Math.sqrt(scale_x* scale_x + scale_y * scale_y);
+        let max_hypertenuse = Math.sqrt(max_x * max_x + max_y * max_y);
+        step = stepcount * hypertenuse / max_hypertenuse;
 
-        for (let i = 1; i < stepcount; i++)
+
+        for (let i = 1; i < step; i++)
         {
-            t = i / stepcount;
+            t = i / step;
 
             x = catmullrom(t, p0[0], p1[0], p2[0], p3[0]);
             y = catmullrom(t, p0[1], p1[1], p2[1], p3[1]);
@@ -226,6 +219,7 @@ function onStartButtonUp() {
     createBackground();
     createPlayer();
     //createEnemy();
+    createGoal();
 
     app.ticker.add(gameloop);  
 
