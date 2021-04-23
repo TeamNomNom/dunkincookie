@@ -1,10 +1,9 @@
-class Goal extends PIXI.Sprite{
-    constructor(x = 0, y = 0, texture, isHit)
+class Marker extends PIXI.Sprite{
+    constructor(x = 0, y = 0, texture)
     {
         super(texture);
         this.anchor.set(0.5);
-        this.scale.set(0.22);
-        this.isHit = false;
+        this.scale.set(0.11);
         this.x = x;
         this.y = y;
     }
@@ -12,6 +11,4 @@ class Goal extends PIXI.Sprite{
     status(){
         return "location" + this.x + ":" + this.y;
     }
-
-
 }
