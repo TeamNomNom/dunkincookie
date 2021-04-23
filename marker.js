@@ -3,7 +3,7 @@ class Marker extends PIXI.Sprite{
     {
         super(texture);
         this.anchor.set(0.5);
-        this.scale.set(0.11);
+        this.scale.set(0.12);
         this.x = x;
         this.y = y;
     }

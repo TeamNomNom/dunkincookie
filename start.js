@@ -9,9 +9,9 @@ var markers = []
 var enemyexists = false;
 var activateMarkersetting = false;
 var executeGame = false;
+var catmullPoints = [];
 //interpolation vars:
 var tau = 1/2;
-
 
 window.onload = function() {
     app = new PIXI.Application({
@@ -29,11 +29,10 @@ window.onload = function() {
     app.loader.add("title", "pic/Background1.png");
     app.loader.add("start", "pic/Start1.png");
     app.loader.add("startOnClick", "pic/Start2.png");
-    app.loader.add("circle", "pic/Circle.png")
+    app.loader.add("circle", "pic/Circle_new.png")
     app.loader.add("goal", "pic/Goal.png")
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
-    
 }
 
 function Initialisation(){
@@ -41,17 +40,14 @@ function Initialisation(){
     start_title = new PIXI.Sprite(app.loader.resources["title"].texture);
 
     start_button = createStartButton();
-
-
   
     app.stage.addChild(start_title);
     app.stage.addChild(start_button);
-
 }
 
 function gameloop(delta){
 
-  
+
     player.move();
     if (enemyexists)
         enemy.move();
@@ -152,18 +148,17 @@ function drawSingleSpline(p0, p1, p2, p3)
             x = catmullrom(t, p0[0], p1[0], p2[0], p3[0]);
             y = catmullrom(t, p0[1], p1[1], p2[1], p3[1]);
 
-            // Set the fill color
-            var graphics = new PIXI.Graphics();
-            graphics.beginFill(0x45f542); // Red
-            graphics.drawCircle(x, y, 5); // drawCircle(x, y, radius)
+            
+            graphics = new PIXI.Graphics();
+            graphics.beginFill(0x45f542);
+            graphics.drawCircle(x, y, 3); // drawCircle(x, y, radius)
             graphics.endFill();
+            catmullPoints.push(graphics);
             app.stage.addChild(graphics);
         }
     }
 
 }
-
-
 
 function catmullrom(t, p0, p1, p2, p3)
 {
@@ -175,7 +170,6 @@ function catmullrom(t, p0, p1, p2, p3)
     );
 }
 
-
 function createBackground()
 {
     bg = new PIXI.Sprite(app.loader.resources["background"].texture);
@@ -186,7 +180,6 @@ function random(min, max)
 {
     return Math.random() * (max - min) + min;
 }
-
 
 function createStartButton()
 {
@@ -218,7 +211,7 @@ function createExecuteButton()
 
     button.addEventListener('pointerdown', function() {
         const button = this;
-        
+
         executeGame = true;
         if (executeGame == true && markers.length >= 3){
             drawAllSplines();
@@ -238,8 +231,17 @@ function createSpeedButton()
     button.addEventListener('pointerdown', function() {
         const button = this;
         
-        console.count("Speed");
-        //Set speed after finisch
+        for(let graphicsCounter = 0; graphicsCounter < catmullPoints.length; graphicsCounter++)
+        {
+            app.stage.removeChild(catmullPoints[graphicsCounter]);
+            executeGame = false; 
+        }
+
+        for(let markerCounter = 0; markerCounter < markers.length; markerCounter++)
+        {
+            app.stage.removeChild(markers[markerCounter]);
+        }
+        markers.length = 0;
 
     });
 }
@@ -249,20 +251,22 @@ function onStartButtonUp() {
     if (!start_isClick)
         return; 
     createBackground();
+
     createPlayer();
     //createEnemy();
     createGoal();
     createExecuteButton();
     createSpeedButton();
    
+    app.ticker.add(gameloop);
+
     start_button.interactive = false;
     start_button.buttonMode = false;
-    app.ticker.add(gameloop);  
-    
     app.stage.removeChild(start_title);
     app.stage.removeChild(start_button);
 
     app.renderer.plugins.interaction.on("pointerup", setmarker);
+
 }
 
 

@@ -26,10 +26,10 @@ class Player extends PIXI.Sprite{
     }
 
     setPos(){
-        var pos = markers.shift()
-        markers.push(pos)
-        this.x = pos[0]
-        this.y = pos[1]
+        var pos = markers.shift();
+        markers.push(pos);
+        this.x = pos[0];
+        this.y = pos[1];
     }
 
 }
