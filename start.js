@@ -49,6 +49,7 @@ function Initialisation(){
 }
 
 function gameloop(delta){
+    
     player.move();
     if (enemyexists)
         enemy.move();
