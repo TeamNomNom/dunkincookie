@@ -8,7 +8,7 @@ var start_isClick = false;
 var markers = []
 var enemyexists = false;
 var activateMarkersetting = false;
-
+var executeGame = false;
 //interpolation vars:
 var tau = 1/2;
 
@@ -42,6 +42,7 @@ function Initialisation(){
 
     start_button = createStartButton();
 
+
   
     app.stage.addChild(start_title);
     app.stage.addChild(start_button);
@@ -49,7 +50,8 @@ function Initialisation(){
 }
 
 function gameloop(delta){
-    
+
+  
     player.move();
     if (enemyexists)
         enemy.move();
@@ -79,7 +81,7 @@ function createGoal(){
 }
 
 function setmarker(){    
-    if (activateMarkersetting && markers.length < 5)
+    if (activateMarkersetting && markers.length < 5 && executeGame == false)
     {
         let x = app.renderer.plugins.interaction.mouse.global.x;
         let y = app.renderer.plugins.interaction.mouse.global.y;
@@ -90,9 +92,7 @@ function setmarker(){
     else
     {
         activateMarkersetting = true;
-        if (markers.length == 5){
-            drawAllSplines();
-        }
+    
     }
 }
 
@@ -127,8 +127,7 @@ function drawAllSplines()
         } else {            
             p3 = [markers[i+1].x, markers[i+1].y];
         }
-        
-        drawSingleSpline(p0, p1, p2, p3)
+            drawSingleSpline(p0, p1, p2, p3)
     }
 }
 
@@ -213,6 +212,39 @@ function createStartButton()
     return button;
 }
 
+function createExecuteButton()
+{
+    const button = document.getElementById('button-play');
+
+    button.addEventListener('pointerdown', function() {
+        const button = this;
+        
+        executeGame = true;
+        if (executeGame == true && markers.length >= 3){
+            drawAllSplines();
+        }
+        else
+        {
+            executeGame = false;
+        }
+
+    });
+}
+
+function createSpeedButton()
+{
+    const button = document.getElementById('button-speed');
+
+    button.addEventListener('pointerdown', function() {
+        const button = this;
+        
+        console.count("Speed");
+        //Set speed after finisch
+
+    });
+}
+
+
 function onStartButtonUp() {
     if (!start_isClick)
         return; 
@@ -220,11 +252,17 @@ function onStartButtonUp() {
     createPlayer();
     //createEnemy();
     createGoal();
-
+    createExecuteButton();
+    createSpeedButton();
+   
+    start_button.interactive = false;
+    start_button.buttonMode = false;
     app.ticker.add(gameloop);  
-
+    
     app.stage.removeChild(start_title);
     app.stage.removeChild(start_button);
 
     app.renderer.plugins.interaction.on("pointerup", setmarker);
 }
+
+

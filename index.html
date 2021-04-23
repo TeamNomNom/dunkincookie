@@ -8,6 +8,48 @@
             text-align: center;
             background-color:rgba(244, 165, 96, 0.671);
         }
+
+        .button {
+            position:relative;
+            top: 530px;
+            left: -365px;
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #fff;
+            background-color: #4CAF50;
+            border-radius: 10px;
+        }
+
+        .button:hover {background-color: #3e8e41}
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+        }
+    
+        .button1 {
+            position:relative;
+            top: 610px;
+            left: -466px;
+            display: inline-block;
+            padding: 15px 25px;
+            font-size: 24px;
+            cursor: pointer;
+            text-align: center;
+            color: #fff;
+            background-color: #4CAF50;
+            border-radius: 10px;
+        }
+
+        .button1:hover {background-color: #3e8e41}
+
+        .button1:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+        }
+        
     </style>
 
 <head>
@@ -28,16 +70,26 @@
     </h3>
     <button onClick="window.location.reload();">Refresh Page</button> 
     <a href="https://github.com/burimvrella/dunkincookie">github</a>
-    <h3></h3>
+
     </div>
 
+    <script	src="js/pixi.min.js"></script>
+    <script src="player.js"> </script>
+    <script src="enemy.js"> </script>
+    <script src="marker.js"> </script>
+    <script src="goal.js"> </script>
+    <script src="start.js"> </script>
 
+
+
+    <div> 
+        <h1 style= "margin: 1%;  position:absolute; top: 630px; right: 1180px; ; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
+            Game Controll
+        </h1>
+        <button id ="button-play" class="button">Play</button>
+        <button id ="button-speed" class="button1">Show Speed</button>
+    </div>
+    
         
-        <script	src="js/pixi.min.js"></script>
-        <script src="player.js"> </script>
-        <script src="enemy.js"> </script>
-        <script src="marker.js"> </script>
-        <script src="goal.js"> </script>
-        <script src="start.js"> </script>
 </body>
 </html>
