@@ -11,6 +11,8 @@ var catmullPoints = [];
 var tau = 1/2;
 var gameloopactive = false;
 var RENDEREDSPLINESTEPS = 60
+var arclengthtable = [];
+var ARCLENGTHSAMPLESIZE = 1000;
 
 window.onload = function() {
     app = new PIXI.Application({
@@ -53,10 +55,6 @@ function random(min, max)
 }
 
 function gameloop(delta){
-    if (gameloopactive)
-    {
-        //player.move(delta);
-    }
     if (enemyexists)
         enemy.move();
 }
@@ -87,7 +85,6 @@ function createGoal(){
 function setmarker(){
     if (markers.length >= 5)
         return;
-    clearSpline();
     x = app.renderer.plugins.interaction.mouse.global.x;
     y = app.renderer.plugins.interaction.mouse.global.y;
     marker = new Marker(x, y, app.loader.resources["circle"].texture);
@@ -95,11 +92,12 @@ function setmarker(){
     markers.push(marker);
     document.getElementById('button-play').disabled = false;
     document.getElementById('button-clear').disabled = false;
-    actionWithAllSplinePoints(RENDEREDSPLINESTEPS, addSplinePoint);
+    addSplinePoints();
 }
 
-function actionWithAllSplinePoints(stepcount, action)
+function addSplinePoints()
 {
+    arclengthtable = [];
     for (let i = 0; i <= markers.length; i++)
     {
         //P0
@@ -130,30 +128,34 @@ function actionWithAllSplinePoints(stepcount, action)
             p3 = [markers[i+1].x, markers[i+1].y];
         }
 
-        actionWithSingleSpline(p0, p1, p2, p3, stepcount, action)
+        actionWithSingleSpline(p0, p1, p2, p3)
     }
+    addSplinePointsToTable(30);
 }
 
-function actionWithSingleSpline(p0, p1, p2, p3, stepcount, action)
+function actionWithSingleSpline(p0, p1, p2, p3)
 {
-    max_x = app.view.width;
-    max_y = app.view.height;
-    scale_x =  (p1[0] - p2[0]);
-    scale_y =  (p1[1] - p2[1]);
-    hypertenuse = Math.sqrt(scale_x* scale_x + scale_y * scale_y);
-    max_hypertenuse = Math.sqrt(max_x * max_x + max_y * max_y);
-    step = stepcount * hypertenuse / max_hypertenuse;
-
-
-    for (let i = 1; i < step; i++)
+    for (let i = 1; i < ARCLENGTHSAMPLESIZE; i++)
     {
-        t = i / step;
+        t = i / ARCLENGTHSAMPLESIZE;
 
         x = catmullrom(t, p0[0], p1[0], p2[0], p3[0]);
         y = catmullrom(t, p0[1], p1[1], p2[1], p3[1]);
 
-        action(x, y)
-        
+        addArclengthEntry(x, y);        
+    }
+}
+
+
+function addSplinePointsToTable(sample)
+{
+    clearSpline();
+    catmullPoints = []
+    for(let i = 0; i < arclengthtable.length; i += sample)
+    {
+        let x = arclengthtable[i].x;
+        let y = arclengthtable[i].y;
+        addSplinePoint(x, y);
     }
 }
 
@@ -168,6 +170,21 @@ function addSplinePoint(x, y)
     app.stage.addChild(graphics);
 }
 
+function addArclengthEntry(x, y)
+{
+    arclength = 0;
+    totalength = 0;
+    if (arclengthtable.length != 0)
+    {
+        prev = arclengthtable[arclengthtable.length - 1];
+        dist_x = x - prev.x;
+        dist_y = y - prev.y;
+        arclength = Math.sqrt(dist_x *dist_x + dist_y *dist_y);
+        totalength = prev.totalLengthTillHere;
+    }
+    entry = new ArclengthtableEntry(x, y, arclength, totalength);
+    arclengthtable.push(entry);
+}
 
 
 
@@ -210,7 +227,8 @@ function createStartButton()
         createPlayer();
         //createEnemy();
         createGoal();
-        actionWithAllSplinePoints(RENDEREDSPLINESTEPS, addSplinePoint);
+        
+        addSplinePoints();
         createExecuteButton();
         createClearButton();
        
@@ -227,27 +245,31 @@ function createStartButton()
 
 
 function clearSpline()
-{    
-    catmullPoints.forEach(c => { app.stage.removeChild(c); });
+{
+    catmullPoints.forEach(c => { 
+        app.stage.removeChild(c); 
+    });
 }
 
 function createClearButton()
 {
-    document.getElementById('button-clear').addEventListener('click', function() {        
-        clearSpline();
+    document.getElementById('button-clear').addEventListener('click', function() {
         markers.forEach(m => { app.stage.removeChild(m); });        
         markers = [];
 
         document.getElementById('button-play').disabled = true;
         document.getElementById('button-clear').disabled = true;
-        actionWithAllSplinePoints(RENDEREDSPLINESTEPS, addSplinePoint);
-
+        
+        addSplinePoints();
     });
 }
 
 function createExecuteButton()
 {
     document.getElementById('button-play').addEventListener('click', function() {
+        
+        addSplinePoints();
+
         gameloopactive = true;
 
     });
