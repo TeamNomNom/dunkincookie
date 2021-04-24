@@ -15,14 +15,10 @@ class Player extends PIXI.Sprite{
         return this.speed + "location" + this.x + ":" + this.y;
     }
 
-    move(){
+    move(delta){
         this.x = this.x + this.speed_x;
         this.y = this.y + this.speed_y;
-        if(this.x > app.view.width - playerRadius || this.x < playerRadius)
-            this.speed_x = -this.speed_x;
-        if(this.y > app.view.height - playerRadius || this.y < playerRadius)
-            this.speed_y = -this.speed_y;
-
+        
     }
 
     setPos(){

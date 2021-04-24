@@ -4,14 +4,13 @@ var playerSpeed = 0;
 var enemySpeed = 1;
 var playerRadius = 35;
 var enemyRadius = 30;
-var start_isClick = false;
 var markers = []
 var enemyexists = false;
-var activateMarkersetting = false;
-var executeGame = false;
 var catmullPoints = [];
 //interpolation vars:
 var tau = 1/2;
+var gameloopactive = false;
+var RENDEREDSPLINESTEPS = 60
 
 window.onload = function() {
     app = new PIXI.Application({
@@ -43,12 +42,21 @@ function Initialisation(){
   
     app.stage.addChild(start_title);
     app.stage.addChild(start_button);
+    
+    document.getElementById('button-play').disabled = true;
+    document.getElementById('button-clear').disabled = true;
+}
+
+function random(min, max)
+{
+    return Math.random() * (max - min) + min;
 }
 
 function gameloop(delta){
-
-
-    player.move();
+    if (gameloopactive)
+    {
+        //player.move(delta);
+    }
     if (enemyexists)
         enemy.move();
 }
@@ -76,23 +84,21 @@ function createGoal(){
 
 }
 
-function setmarker(){    
-    if (activateMarkersetting && markers.length < 5 && executeGame == false)
-    {
-        let x = app.renderer.plugins.interaction.mouse.global.x;
-        let y = app.renderer.plugins.interaction.mouse.global.y;
-        marker = new Marker(x, y, app.loader.resources["circle"].texture);
-        app.stage.addChild(marker);
-        markers.push(marker);
-    }
-    else
-    {
-        activateMarkersetting = true;
-    
-    }
+function setmarker(){
+    if (markers.length >= 5)
+        return;
+    clearSpline();
+    x = app.renderer.plugins.interaction.mouse.global.x;
+    y = app.renderer.plugins.interaction.mouse.global.y;
+    marker = new Marker(x, y, app.loader.resources["circle"].texture);
+    app.stage.addChild(marker);
+    markers.push(marker);
+    document.getElementById('button-play').disabled = false;
+    document.getElementById('button-clear').disabled = false;
+    actionWithAllSplinePoints(RENDEREDSPLINESTEPS, addSplinePoint);
 }
 
-function drawAllSplines()
+function actionWithAllSplinePoints(stepcount, action)
 {
     for (let i = 0; i <= markers.length; i++)
     {
@@ -123,42 +129,47 @@ function drawAllSplines()
         } else {            
             p3 = [markers[i+1].x, markers[i+1].y];
         }
-            drawSingleSpline(p0, p1, p2, p3)
+
+        actionWithSingleSpline(p0, p1, p2, p3, stepcount, action)
     }
 }
 
-function drawSingleSpline(p0, p1, p2, p3)
+function actionWithSingleSpline(p0, p1, p2, p3, stepcount, action)
 {
-    if (markers.length > 2)
+    max_x = app.view.width;
+    max_y = app.view.height;
+    scale_x =  (p1[0] - p2[0]);
+    scale_y =  (p1[1] - p2[1]);
+    hypertenuse = Math.sqrt(scale_x* scale_x + scale_y * scale_y);
+    max_hypertenuse = Math.sqrt(max_x * max_x + max_y * max_y);
+    step = stepcount * hypertenuse / max_hypertenuse;
+
+
+    for (let i = 1; i < step; i++)
     {
-        stepcount = 60;
-        let max_x = app.view.width;
-        let max_y = app.view.height;
-        let scale_x =  (p1[0] - p2[0]);
-        let scale_y =  (p1[1] - p2[1]);
-        let hypertenuse = Math.sqrt(scale_x* scale_x + scale_y * scale_y);
-        let max_hypertenuse = Math.sqrt(max_x * max_x + max_y * max_y);
-        step = stepcount * hypertenuse / max_hypertenuse;
+        t = i / step;
 
+        x = catmullrom(t, p0[0], p1[0], p2[0], p3[0]);
+        y = catmullrom(t, p0[1], p1[1], p2[1], p3[1]);
 
-        for (let i = 1; i < step; i++)
-        {
-            t = i / step;
-
-            x = catmullrom(t, p0[0], p1[0], p2[0], p3[0]);
-            y = catmullrom(t, p0[1], p1[1], p2[1], p3[1]);
-
-            
-            graphics = new PIXI.Graphics();
-            graphics.beginFill(0x45f542);
-            graphics.drawCircle(x, y, 3); // drawCircle(x, y, radius)
-            graphics.endFill();
-            catmullPoints.push(graphics);
-            app.stage.addChild(graphics);
-        }
+        action(x, y)
+        
     }
-
 }
+
+
+function addSplinePoint(x, y)
+{
+    graphics = new PIXI.Graphics();
+    graphics.beginFill(0x45f542);
+    graphics.drawCircle(x, y, 3); // drawCircle(x, y, radius)
+    graphics.endFill();
+    catmullPoints.push(graphics);
+    app.stage.addChild(graphics);
+}
+
+
+
 
 function catmullrom(t, p0, p1, p2, p3)
 {
@@ -174,11 +185,6 @@ function createBackground()
 {
     bg = new PIXI.Sprite(app.loader.resources["background"].texture);
     app.stage.addChild(bg);
-}
-
-function random(min, max)
-{
-    return Math.random() * (max - min) + min;
 }
 
 function createStartButton()
@@ -197,76 +203,52 @@ function createStartButton()
     button.interactive = true;
     button.buttonMode = true;
 
-    button.on("pointerup", onStartButtonUp);
-    button.on("pointerdown", function() {start_isClick = true;});
     button.on("pointerover", function() {this.texture = startOnClick;});
     button.on("pointerout", function() {this.texture = start;});
+    button.on("click", function() {
+        createBackground();
+        createPlayer();
+        //createEnemy();
+        createGoal();
+        actionWithAllSplinePoints(RENDEREDSPLINESTEPS, addSplinePoint);
+        createExecuteButton();
+        createClearButton();
+       
+        app.ticker.add(gameloop);
+    
+        app.stage.removeChild(start_title);
+        app.stage.removeChild(start_button);
+    
+        app.renderer.plugins.interaction.on("pointerdown", setmarker);
+    });
 
     return button;
 }
 
+
+function clearSpline()
+{    
+    catmullPoints.forEach(c => { app.stage.removeChild(c); });
+}
+
+function createClearButton()
+{
+    document.getElementById('button-clear').addEventListener('click', function() {        
+        clearSpline();
+        markers.forEach(m => { app.stage.removeChild(m); });        
+        markers = [];
+
+        document.getElementById('button-play').disabled = true;
+        document.getElementById('button-clear').disabled = true;
+        actionWithAllSplinePoints(RENDEREDSPLINESTEPS, addSplinePoint);
+
+    });
+}
+
 function createExecuteButton()
 {
-    const button = document.getElementById('button-play');
-
-    button.addEventListener('pointerdown', function() {
-        const button = this;
-
-        executeGame = true;
-        if (executeGame == true && markers.length >= 3){
-            drawAllSplines();
-        }
-        else
-        {
-            executeGame = false;
-        }
+    document.getElementById('button-play').addEventListener('click', function() {
+        gameloopactive = true;
 
     });
 }
-
-function createSpeedButton()
-{
-    const button = document.getElementById('button-speed');
-
-    button.addEventListener('pointerdown', function() {
-        const button = this;
-        
-        for(let graphicsCounter = 0; graphicsCounter < catmullPoints.length; graphicsCounter++)
-        {
-            app.stage.removeChild(catmullPoints[graphicsCounter]);
-            executeGame = false; 
-        }
-
-        for(let markerCounter = 0; markerCounter < markers.length; markerCounter++)
-        {
-            app.stage.removeChild(markers[markerCounter]);
-        }
-        markers.length = 0;
-
-    });
-}
-
-
-function onStartButtonUp() {
-    if (!start_isClick)
-        return; 
-    createBackground();
-
-    createPlayer();
-    //createEnemy();
-    createGoal();
-    createExecuteButton();
-    createSpeedButton();
-   
-    app.ticker.add(gameloop);
-
-    start_button.interactive = false;
-    start_button.buttonMode = false;
-    app.stage.removeChild(start_title);
-    app.stage.removeChild(start_button);
-
-    app.renderer.plugins.interaction.on("pointerup", setmarker);
-
-}
-
-
