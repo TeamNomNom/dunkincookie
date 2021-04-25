@@ -1,15 +1,16 @@
 var app;
 var player;
-var playerSpeed = 0;
+var playerSpeed = 30;
 var enemySpeed = 1;
 var playerRadius = 35;
 var enemyRadius = 30;
 var markers = []
 var enemyexists = false;
 var catmullPoints = [];
+var reachedGoal = false;
+var gameloopactive = false;
 //interpolation vars:
 var tau = 1/2;
-var gameloopactive = false;
 var RENDEREDSPLINESTEPS = 60
 var arclengthtable = [];
 var ARCLENGTHSAMPLESIZE = 1000;
@@ -55,6 +56,11 @@ function random(min, max)
 }
 
 function gameloop(delta){
+    if (gameloopactive)
+    {        
+        player.updatespeed();
+        player.move(delta);
+    }
     if (enemyexists)
         enemy.move();
 }
@@ -83,6 +89,8 @@ function createGoal(){
 }
 
 function setmarker(){
+    if (gameloopactive || reachedGoal)
+        return;
     if (markers.length >= 5)
         return;
     x = app.renderer.plugins.interaction.mouse.global.x;
@@ -102,14 +110,14 @@ function addSplinePoints()
     {
         //P0
         if (i == 0 || i == 1){
-            p0 = [player.x, player.y];
+            p0 = [player.start_x, player.start_y];
         } else {
             p0 = [markers[i-2].x, markers[i-2].y];
         }
 
         //P1
         if (i == 0) {
-            p1 = [player.x, player.y];
+            p1 = [player.start_x, player.start_y];
         } else {
             p1 = [markers[i-1].x, markers[i-1].y];
         }
@@ -186,6 +194,19 @@ function addArclengthEntry(x, y)
     arclengthtable.push(entry);
 }
 
+
+function getPosFromArclengthWithDelta(startpoint, delta)
+{
+    for (i = 0; i < arclengthtable.length; i++)
+    {
+        let e = arclengthtable[i]
+        if(e.totalLengthTillHere > startpoint + delta)
+            return e;
+    }
+    gameloopactive = false;
+    reachedGoal = true;
+    return arclengthtable[arclengthtable.length-1];
+}
 
 
 function catmullrom(t, p0, p1, p2, p3)
@@ -264,13 +285,16 @@ function createClearButton()
     });
 }
 
+
 function createExecuteButton()
 {
     document.getElementById('button-play').addEventListener('click', function() {
         
-        addSplinePoints();
-
         gameloopactive = true;
+        player.setEaseParameters(arclengthtable[arclengthtable.length-1].totalLengthTillHere);
+
+        document.getElementById('button-play').disabled = true;
+        document.getElementById('button-clear').disabled = true;
 
     });
 }
