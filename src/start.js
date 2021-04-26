@@ -4,14 +4,17 @@ var playerSpeed = 30;
 var enemySpeed = 1;
 var playerRadius = 35;
 var enemyRadius = 30;
-var markers = []
+
+var MARKERLIMIT = 5;
+var markers = [];
+var visibleSplinePoints = [];
+var RENDEREDSPLINESTEPS = 30
+
 var enemyexists = false;
-var catmullPoints = [];
 var reachedGoal = false;
 var gameloopactive = false;
 //interpolation vars:
 var tau = 1/2;
-var RENDEREDSPLINESTEPS = 60
 var arclengthtable = [];
 var ARCLENGTHSAMPLESIZE = 1000;
 
@@ -50,11 +53,16 @@ function Initialisation(){
     document.getElementById('button-clear').disabled = true;
 }
 
+//helperfunction returning a somewhat random result from min to max
 function random(min, max)
 {
     return Math.random() * (max - min) + min;
 }
 
+//Gameloop which is FPS independn you can set the rate at which this is called 
+//with app.ticker.speed also we can manually skip gameloop calls aswell for 
+//example if some calculation are not done yet or we are waiting for input 
+//from the player.
 function gameloop(delta){
     if (gameloopactive)
     {        
@@ -65,6 +73,7 @@ function gameloop(delta){
         enemy.move();
 }
 
+//loads Player icon on the Scene
 function createPlayer(){
     x = random(playerRadius, (app.view.width / 5 - playerRadius));
     y = random(playerRadius, app.view.height - playerRadius);
@@ -72,6 +81,7 @@ function createPlayer(){
     app.stage.addChild(player);
 }
 
+//loads Player icon on the Scene
 function createEnemy(){
     x = random(enemyRadius, app.view.width - enemyRadius);
     y = random(enemyRadius, app.view.height - enemyRadius);
@@ -80,6 +90,7 @@ function createEnemy(){
     enemyexists = true;
 }
 
+//loads Player icon on the Scene
 function createGoal(){
     x = random(app.view.width - (app.view.width / 5 - playerRadius), app.view.width);
     y = random(playerRadius, app.view.height - playerRadius);
@@ -88,10 +99,11 @@ function createGoal(){
 
 }
 
+//sets Marker (ControlPoint) to the Scene 
 function setmarker(){
     if (gameloopactive || reachedGoal)
         return;
-    if (markers.length >= 5)
+    if (markers.length >= MARKERLIMIT)
         return;
     x = app.renderer.plugins.interaction.mouse.global.x;
     y = app.renderer.plugins.interaction.mouse.global.y;
@@ -103,6 +115,7 @@ function setmarker(){
     addSplinePoints();
 }
 
+//add spline points for every curve between control points
 function addSplinePoints()
 {
     arclengthtable = [];
@@ -136,12 +149,14 @@ function addSplinePoints()
             p3 = [markers[i+1].x, markers[i+1].y];
         }
 
-        actionWithSingleSpline(p0, p1, p2, p3)
+        addSingleSpline(p0, p1, p2, p3)
     }
-    addSplinePointsToTable(30);
+    addVisibleSplinePoint(RENDEREDSPLINESTEPS);
 }
 
-function actionWithSingleSpline(p0, p1, p2, p3)
+//add spline points for a curve between 2 control points p1 and p2 
+//and helper control points p0 and p3
+function addSingleSpline(p0, p1, p2, p3)
 {
     for (let i = 1; i < ARCLENGTHSAMPLESIZE; i++)
     {
@@ -154,30 +169,18 @@ function actionWithSingleSpline(p0, p1, p2, p3)
     }
 }
 
-
-function addSplinePointsToTable(sample)
+//calculate value using matrix calculation.
+function catmullrom(t, p0, p1, p2, p3)
 {
-    clearSpline();
-    catmullPoints = []
-    for(let i = 0; i < arclengthtable.length; i += sample)
-    {
-        let x = arclengthtable[i].x;
-        let y = arclengthtable[i].y;
-        addSplinePoint(x, y);
-    }
+    return tau * (
+        (2 * p1) +
+        (-p0 + p2) * t + 
+        (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t +
+        (-p0 + 3 *p1 -3 * p2 + p3) * t * t * t 
+    );
 }
 
-
-function addSplinePoint(x, y)
-{
-    graphics = new PIXI.Graphics();
-    graphics.beginFill(0x45f542);
-    graphics.drawCircle(x, y, 3); // drawCircle(x, y, radius)
-    graphics.endFill();
-    catmullPoints.push(graphics);
-    app.stage.addChild(graphics);
-}
-
+//Add Point to Arclength Table
 function addArclengthEntry(x, y)
 {
     arclength = 0;
@@ -194,13 +197,32 @@ function addArclengthEntry(x, y)
     arclengthtable.push(entry);
 }
 
+//Add a spline point 
+function addVisibleSplinePoint(sample)
+{
+    visibleSplinePoints.forEach(c => { app.stage.removeChild(c); });
+    visibleSplinePoints = []
+    for(let i = 0; i < arclengthtable.length; i += sample)
+    {
+        let x = arclengthtable[i].x;
+        let y = arclengthtable[i].y;
 
-function getPosFromArclengthWithDelta(startpoint, delta)
+        graphics = new PIXI.Graphics();
+        graphics.beginFill(0x45f542);
+        graphics.drawCircle(x, y, 3); // drawCircle(x, y, radius)
+        graphics.endFill();
+        visibleSplinePoints.push(graphics);
+        app.stage.addChild(graphics);
+    }
+}
+
+// returns first value after passing a goallength in the  arclength table
+function getPosFromArclengthWithDelta(goal)
 {
     for (i = 0; i < arclengthtable.length; i++)
     {
         let e = arclengthtable[i]
-        if(e.totalLengthTillHere > startpoint + delta)
+        if(e.totalLengthTillHere > goal)
             return e;
     }
     gameloopactive = false;
@@ -208,23 +230,14 @@ function getPosFromArclengthWithDelta(startpoint, delta)
     return arclengthtable[arclengthtable.length-1];
 }
 
-
-function catmullrom(t, p0, p1, p2, p3)
+//Loads Background texture
+function createBackground(resourcename)
 {
-    return tau * (
-        (2 * p1) +
-        (-p0 + p2) * t + 
-        (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t +
-        (-p0 + 3 *p1 -3 * p2 + p3) * t * t * t 
-    );
-}
-
-function createBackground()
-{
-    bg = new PIXI.Sprite(app.loader.resources["background"].texture);
+    bg = new PIXI.Sprite(app.loader.resources[resourcename].texture);
     app.stage.addChild(bg);
 }
 
+//Creates the Start Button, including a an listener which starts the game itself.
 function createStartButton()
 {
     start = app.loader.resources['start'].texture;
@@ -244,16 +257,18 @@ function createStartButton()
     button.on("pointerover", function() {this.texture = startOnClick;});
     button.on("pointerout", function() {this.texture = start;});
     button.on("click", function() {
-        createBackground();
+        createBackground("background");
         createPlayer();
         //createEnemy();
         createGoal();
         
         addSplinePoints();
-        createExecuteButton();
-        createClearButton();
+        addPlayButtonListener();
+        addClearbuttonListener();
        
         app.ticker.add(gameloop);
+        app.ticker.speed = 12;
+        
     
         app.stage.removeChild(start_title);
         app.stage.removeChild(start_button);
@@ -265,14 +280,8 @@ function createStartButton()
 }
 
 
-function clearSpline()
-{
-    catmullPoints.forEach(c => { 
-        app.stage.removeChild(c); 
-    });
-}
-
-function createClearButton()
+// add listener to the Clear Markers button, which clears the markers
+function addClearbuttonListener()
 {
     document.getElementById('button-clear').addEventListener('click', function() {
         markers.forEach(m => { app.stage.removeChild(m); });        
@@ -285,16 +294,14 @@ function createClearButton()
     });
 }
 
-
-function createExecuteButton()
+//add listener to the Play Button, which starts the gameloop
+function addPlayButtonListener()
 {
-    document.getElementById('button-play').addEventListener('click', function() {
-        
+    document.getElementById('button-play').addEventListener('click', function() {        
         gameloopactive = true;
         player.setEaseParameters(arclengthtable[arclengthtable.length-1].totalLengthTillHere);
 
         document.getElementById('button-play').disabled = true;
         document.getElementById('button-clear').disabled = true;
-
     });
 }
