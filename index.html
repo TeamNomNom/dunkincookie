@@ -4,56 +4,85 @@
     <style>
         body{
             width: 98%;
-            margin: 20px auto;
+            margin: 10px auto;
             text-align: center;
             background-color:rgba(244, 165, 96, 0.671);
         }
-
-        .button {
+        .buttoncontainer{
             position:relative;
-            top: 530px;
-            left: -365px;
             display: inline-block;
             padding: 15px 25px;
             font-size: 24px;
             cursor: pointer;
+            text-align: center;
             color: #fff;
             background-color: #4CAF50;
             border-radius: 10px;
         }
 
-        .button:hover {background-color: #3e8e41}
+        .button {
+            top: 540px;
+            left: -350px;
+        }
 
-        .button:active {
+        .buttoncontainer:hover {background-color: #3e8e41}
+
+        .buttoncontainer:active {
             background-color: #3e8e41;
             box-shadow: 0 5px #666;
         }
     
-        .button1 {
-            position:relative;
-            top: 610px;
-            left: -466px;
-            display: inline-block;
-            padding: 15px 25px;
-            font-size: 24px;
-            cursor: pointer;
-            text-align: center;
-            color: #fff;
-            background-color: #4CAF50;
-            border-radius: 10px;
+        .button1{
+            top: 620px;
+            left: -453px;
+
         }
 
-        .button1:hover {background-color: #3e8e41}
-
-        .button1:active {
-            background-color: #3e8e41;
-            box-shadow: 0 5px #666;
-        }
         .controlbutton:disabled {            
             color: #3e8e41;
         }
 
-        
+        .slidecontainer{
+            position:relative;
+            -webkit-appearance: none;
+            width: 25%;
+            height: 5px;
+            border-radius: 5px;  
+            background: #d3d3d3;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+
+        }
+
+        .slidecontainer::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%; 
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .slidecontainer::-moz-range-thumb {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+
+        .slider{
+            top: 500px;
+            left: 490px;
+        }
+
+        .slider1{
+            top: 600px;
+            left: 14px;
+        }
+
     </style>
 
 <head>
@@ -83,15 +112,31 @@
     <button onClick="window.location.reload();">Refresh Page</button> 
     <a href="https://github.com/burimvrella/dunkincookie">github</a>
 
+    <h1 style= "margin: 1%;  position:absolute; top: 640px; right: 1200px; ; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
+        Game Control
+    </h1>
+        
+    </div class="buttons">
+
+    <button id ="button-play" class="button controlbutton buttoncontainer">Play</button>
+    <button id ="button-clear" class="button1 controlbutton buttoncontainer">Clear all Points</button>
+
+    <div>
+
     </div>
-    <div> 
-        <h1 style= "margin: 1%;  position:absolute; top: 630px; right: 1180px; ; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
-            Game Control
-        </h1>
-        <button id ="button-play" class="button controlbutton">Play</button>
-        <button id ="button-clear" class="button1 controlbutton">Clear all Points</button>
+    <h1 style= "margin: 1%;  position:absolute; top: 640px; right: 660px; ; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
+        Speed Control
+    </h1>
+        
+    <h1 style= "margin: 1%;  position:absolute; top: 740px; right: 590px; ; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
+        Animation Control
+    </h1>
+
+    <div class="sliders">
+
+        <input type="range" min="1" max="50" value="0" class="slider slidecontainer" id="speedControl">
+        <input type="range" min="1" max="10" value="0" class="slider1 slidecontainer" id="animationControl">
     </div>
-    
         
 </body>
 </html>

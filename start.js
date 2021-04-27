@@ -305,3 +305,4 @@ function addPlayButtonListener()
         document.getElementById('button-clear').disabled = true;
     });
 }
+
