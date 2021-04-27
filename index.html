@@ -99,6 +99,8 @@
     <script src="goal.js"> </script>
     <script src="arclengthtableentry.js"> </script>
     <script src="start.js"> </script>
+    <script>
+    </script>
 </head>
 
 <body>
@@ -126,16 +128,18 @@
     </div>
     <h1 style= "margin: 1%;  position:absolute; top: 640px; right: 660px; ; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
         Speed Control
+        <p>Value: <span id="valuespeed"></span></p>
     </h1>
         
     <h1 style= "margin: 1%;  position:absolute; top: 740px; right: 590px; ; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
         Animation Control
+        <p>Value: <span id="valueanimation"></span></p>
     </h1>
 
     <div class="sliders">
 
-        <input type="range" min="1" max="50" value="0" class="slider slidecontainer" id="speedControl">
-        <input type="range" min="1" max="10" value="0" class="slider1 slidecontainer" id="animationControl">
+        <input type="range" min="0" max="200" step="1" value="0" class="slider slidecontainer" id="speedControl">
+        <input type="range" min="0" max="50" value="0" class="slider1 slidecontainer" id="animationControl">
     </div>
         
 </body>

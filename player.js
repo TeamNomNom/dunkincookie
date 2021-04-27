@@ -34,6 +34,10 @@ class Player extends PIXI.Sprite{
         this.pathposition = entry.totalLengthTillHere;
     }
 
+    setbasespeed(val){
+        this.basespeed = val
+    }
+
     //update the speed the player is traversing the puzzle with a ease in -out 
     //function. similar to the function used in the lecture tho we are not 
     //calculating the relative distance the player has traversed so far but a 

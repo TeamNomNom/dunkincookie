@@ -5,7 +5,7 @@ var enemySpeed = 1;
 var playerRadius = 35;
 var enemyRadius = 30;
 
-var MARKERLIMIT = 5;
+var MARKERLIMIT = 10;
 var markers = [];
 var visibleSplinePoints = [];
 var RENDEREDSPLINESTEPS = 30
@@ -13,6 +13,7 @@ var RENDEREDSPLINESTEPS = 30
 var enemyexists = false;
 var reachedGoal = false;
 var gameloopactive = false;
+
 //interpolation vars:
 var tau = 1/2;
 var arclengthtable = [];
@@ -28,6 +29,7 @@ window.onload = function() {
 
     document.body.appendChild(app.view);
 
+    app.ticker.speed = 0;
     app.loader.add("player", "pic/Player1.png");
     app.loader.add("enemy", "pic/enemy.png");
     app.loader.add("background", "pic/Background1.png");
@@ -38,6 +40,27 @@ window.onload = function() {
     app.loader.add("goal", "pic/Goal.png")
     app.loader.onComplete.add(Initialisation);
     app.loader.load();
+
+    
+
+    var slider_speed = document.getElementById("speedControl");
+    var output_speed = document.getElementById("valuespeed");
+    output_speed.innerHTML = slider_speed.value; 
+
+    //WILL NOT ERROR ONCE WE MOVED INPUT THINGYS TO PIXIJS
+    slider_speed.oninput = function(){ 
+        output_speed.innerHTML = this.value;
+        player.setbasespeed(this.value);
+        
+    }
+
+    var slider_animation = document.getElementById("animationControl");
+    var output_animation = document.getElementById("valueanimation");
+    output_animation.innerHTML = slider_animation.value; 
+    slider_animation.oninput = function(){ 
+        output_animation.innerHTML = this.value;
+        app.ticker.speed = this.value;
+    }
 }
 
 function Initialisation(){
@@ -64,6 +87,13 @@ function random(min, max)
 //example if some calculation are not done yet or we are waiting for input 
 //from the player.
 function gameloop(delta){
+    console.log("delta    ",delta);
+    console.log("elapseMS ",app.ticker.elapsedMS );
+    console.log("FPS      ",app.ticker.FPS);
+    console.log("speed    ",app.ticker.speed);
+    if (app.ticker.speed == 0)
+        return;
+    
     if (gameloopactive)
     {        
         player.updatespeed();
@@ -77,7 +107,7 @@ function gameloop(delta){
 function createPlayer(){
     x = random(playerRadius, (app.view.width / 5 - playerRadius));
     y = random(playerRadius, app.view.height - playerRadius);
-    player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed, playerSpeed);
+    player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed);
     app.stage.addChild(player);
 }
 
@@ -85,7 +115,7 @@ function createPlayer(){
 function createEnemy(){
     x = random(enemyRadius, app.view.width - enemyRadius);
     y = random(enemyRadius, app.view.height - enemyRadius);
-    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, enemySpeed, enemySpeed);
+    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, enemySpeed);
     app.stage.addChild(enemy);
     enemyexists = true;
 }
@@ -267,7 +297,7 @@ function createStartButton()
         addClearbuttonListener();
        
         app.ticker.add(gameloop);
-        app.ticker.speed = 12;
+        app.ticker.minFPS = 0;
         
     
         app.stage.removeChild(start_title);
