@@ -22,13 +22,13 @@ var ARCLENGTHSAMPLESIZE = 1000;
 window.onload = function() {
     app = new PIXI.Application({
 
-        width: 1000,
-        height: 400,
+        width: 1300,
+        height: 600,
         backgroundColor: 0xAAAAAA
     });
 
-    document.body.appendChild(app.view);
-
+    document.getElementById("game").append(app.view);
+    
     app.ticker.speed = 0;
     app.loader.add("player", "pic/Player1.png");
     app.loader.add("enemy", "pic/enemy.png");
@@ -66,6 +66,7 @@ window.onload = function() {
 function Initialisation(){
     console.count("finish loading");
     start_title = new PIXI.Sprite(app.loader.resources["title"].texture);
+    start_title.scale.set(1.5);
 
     start_button = createStartButton();
   
@@ -264,6 +265,7 @@ function getPosFromArclengthWithDelta(goal)
 function createBackground(resourcename)
 {
     bg = new PIXI.Sprite(app.loader.resources[resourcename].texture);
+    bg.scale.set(1.5)
     app.stage.addChild(bg);
 }
 

@@ -1,146 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <style>
-        body{
-            width: 98%;
-            margin: 10px auto;
-            text-align: center;
-            background-color:rgba(244, 165, 96, 0.671);
-        }
-        .buttoncontainer{
-            position:relative;
-            display: inline-block;
-            padding: 15px 25px;
-            font-size: 24px;
-            cursor: pointer;
-            text-align: center;
-            color: #fff;
-            background-color: #4CAF50;
-            border-radius: 10px;
-        }
-
-        .button {
-            top: 540px;
-            left: -350px;
-        }
-
-        .buttoncontainer:hover {background-color: #3e8e41}
-
-        .buttoncontainer:active {
-            background-color: #3e8e41;
-            box-shadow: 0 5px #666;
-        }
-    
-        .button1{
-            top: 620px;
-            left: -453px;
-
-        }
-
-        .controlbutton:disabled {            
-            color: #3e8e41;
-        }
-
-        .slidecontainer{
-            position:relative;
-            -webkit-appearance: none;
-            width: 25%;
-            height: 5px;
-            border-radius: 5px;  
-            background: #d3d3d3;
-            opacity: 0.7;
-            -webkit-transition: .2s;
-            transition: opacity .2s;
-
-        }
-
-        .slidecontainer::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%; 
-            background: #4CAF50;
-            cursor: pointer;
-        }
-
-        .slidecontainer::-moz-range-thumb {
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-        }
-
-        .slider{
-            top: 500px;
-            left: 490px;
-        }
-
-        .slider1{
-            top: 600px;
-            left: 14px;
-        }
-
-    </style>
-
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="
+    sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
 
+    <link href="style.css" rel="stylesheet">
+    
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dunking Cookie</title>
-    
-    <script	src="js/pixi.min.js"></script>
-    <script src="player.js"> </script>
-    <script src="enemy.js"> </script>
-    <script src="marker.js"> </script>
-    <script src="goal.js"> </script>
-    <script src="arclengthtableentry.js"> </script>
-    <script src="start.js"> </script>
-    <script>
-    </script>
+
+
 </head>
 
 <body>
-    <div>
-    <h1 style="margin: 1%; text-align: center; font-size:50px;  color:brown; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
-        Dunkin Cookie
-    </h1>  
-    <h3 style="margin: 1%; text-align: center; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
-       by Team NomNom
-    </h3>
-    <button onClick="window.location.reload();">Refresh Page</button> 
-    <a href="https://github.com/burimvrella/dunkincookie">github</a>
+   
+        <div class="title">
+            Dunkin Cookie
+        </div>
+        <div class="subtitle">
+            by Team NomNom
+        </div>
+        <div class="subsubtitle">
+            <button onClick="window.location.reload();">Refresh Page</button>
+            <a href="https://github.com/burimvrella/dunkincookie">github</a>
+        </div>
+   
 
-    <h1 style= "margin: 1%;  position:absolute; top: 640px; right: 1200px; ; font: size 35pxpx;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
-        Game Control
-    </h1>
+    <div class="row no-gutters d-flex">
+
+        <div class="col no-gutters d-flex justify-content-center align-item-center">
+
+            <div class="leftside">
+                <div id="game">
+                    <script	src="js/pixi.min.js"></script>
+                    <script src="player.js"> </script>
+                    <script src="enemy.js"> </script>
+                    <script src="marker.js"> </script>
+                    <script src="goal.js"> </script>
+                    <script src="arclengthtableentry.js"> </script>
+                    <script src="start.js">  </script>
+                    
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col no-gutters d-flex">
+
+            <div class="rightside">
+                <div class="row no-gutters d-flex justify-content-center">
+                    <div class="gamecontorll">
+                        Game Control
+                    </div>
+                </div>
+                <div class="row no-gutters d-flex">
+                    <div class="col no-gutters d-flex justify-content-center">
+                            <button id ="button-play" class="button controlbutton buttoncontainer">Play</button>
+                    </div>
+                    <div class="col no-gutters d-flex justify-content-center">
+                            <button id ="button-clear" class="button1 controlbutton buttoncontainer">Clear all Points</button>
+                    </div>
+                </div>
+
+
+                <div class="row no-gutters d-flex justify-content-center">
+                    <div class="speedcontorll">
+                        Speed Control
+                    </div>
+                </div>
+                <div class="row no-gutters d-flex">
+                    <div class="col no-gutters d-flex justify-content-center">
+                        <input type="range" min="0" max="200" step="1" value="0" class="slider slidecontainer" id="speedControl">
+                    </div>
+                </div>
+                <div class="row no-gutters d-flex justify-content-center">
+                    <div class="value">
+                        <p>Value: <span  id="valuespeed"></span></p>
+                    </div>
+                </div>
+
+                <div class="row no-gutters d-flex justify-content-center">
+                    <div class="speedcontorll">
+                        Animation Speed Control
+                    </div>
+                </div>
+                <div class="row no-gutters d-flex">
+                    <div class="col no-gutters d-flex justify-content-center">
+                        <input type="range" min="0" max="50" step="0.5" value="0" class="slider1 slidecontainer" id="animationControl">
+                    </div>
+                </div>
+                <div class="row no-gutters d-flex justify-content-center">
+                    <div class="value">
+                        <p>Value: <span  id="valueanimation"></span>
+                    </div>
+                </div>
         
-    </div class="buttons">
+            </div>
 
-    <button id ="button-play" class="button controlbutton buttoncontainer">Play</button>
-    <button id ="button-clear" class="button1 controlbutton buttoncontainer">Clear all Points</button>
-
-    <div>
+        </div>
 
     </div>
-    <h1 style= "margin: 1%;  position:absolute; top: 640px; right: 660px; font: size 35px;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
-        Speed Control
-        <h3 style = "position:absolute; top: 634px; right: 560px; font: size 15px;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif;"><p>Value: <span  id="valuespeed"></span></p></h3>
-    </h1>
-        
-    <h1 style= "margin: 1%;  position:absolute; top: 740px; right: 590px; font: size 35px;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif; ">
-        Animation Control
-        <h3 style = "position:absolute; top: 735px; right: 500px; font: size 15px;  color:black; font-family:Verdana, Geneva, Tahoma, sans-serif;"><p>Value: <span  id="valueanimation"></span></p></h3>
-    </h1>
-
-    <div class="sliders">
-
-        <input type="range" min="0" max="200" step="1" value="0" class="slider slidecontainer" id="speedControl">
-        <input type="range" min="0" max="50" step="0.5" value="0" class="slider1 slidecontainer" id="animationControl">
-    </div>
-        
+  
 </body>
 </html>
