@@ -1,16 +1,22 @@
 var app;
 var player;
 var playerSpeed = 30;
-var enemySpeed = 1;
+
+var objects = [];
+var enemySpeed = 0;
 var playerRadius = 35;
 var enemyRadius = 30;
+
+var PLAYERMASS = 20;
+var PLAYERGRAVVAR = 10000;
+var ENEMYMASS = 3;
+var ENEMYGRAVVAR = 100000;
 
 var MARKERLIMIT = 10;
 var markers = [];
 var visibleSplinePoints = [];
 var RENDEREDSPLINESTEPS = 30
 
-var enemyexists = false;
 var reachedGoal = false;
 var gameloopactive = false;
 
@@ -88,10 +94,10 @@ function random(min, max)
 //example if some calculation are not done yet or we are waiting for input 
 //from the player.
 function gameloop(delta){
-    console.log("delta    ",delta);
-    console.log("elapseMS ",app.ticker.elapsedMS );
-    console.log("FPS      ",app.ticker.FPS);
-    console.log("speed    ",app.ticker.speed);
+    //console.log("delta    ",delta);
+    //console.log("elapseMS ",app.ticker.elapsedMS );
+    //console.log("FPS      ",app.ticker.FPS);
+    //console.log("speed    ",app.ticker.speed);
     if (app.ticker.speed == 0)
         return;
     
@@ -99,16 +105,25 @@ function gameloop(delta){
     {        
         player.updatespeed();
         player.move(delta);
+        
+        for(var i = 0; i < objects.length; i++) 
+        {
+            objects[i].move(objects, player, delta);
+        }
+        
+        for(var i = 0; i < objects.length; i++)
+        {
+            objects[i].update();
+        }
+        console.log("");
     }
-    if (enemyexists)
-        enemy.move();
 }
 
 //loads Player icon on the Scene
 function createPlayer(){
     x = random(playerRadius, (app.view.width / 5 - playerRadius));
     y = random(playerRadius, app.view.height - playerRadius);
-    player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed);
+    player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed, PLAYERMASS, PLAYERGRAVVAR);
     app.stage.addChild(player);
 }
 
@@ -116,9 +131,9 @@ function createPlayer(){
 function createEnemy(){
     x = random(enemyRadius, app.view.width - enemyRadius);
     y = random(enemyRadius, app.view.height - enemyRadius);
-    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, enemySpeed);
+    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, enemySpeed, enemySpeed, ENEMYMASS, ENEMYGRAVVAR);
     app.stage.addChild(enemy);
-    enemyexists = true;
+    objects.push(enemy)
 }
 
 //loads Player icon on the Scene
@@ -291,7 +306,8 @@ function createStartButton()
     button.on("click", function() {
         createBackground("background");
         createPlayer();
-        //createEnemy();
+        createEnemy();
+        createEnemy();
         createGoal();
         
         addSplinePoints();

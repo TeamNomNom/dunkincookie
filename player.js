@@ -1,7 +1,7 @@
 var EASEPERCENTAGE = 0.4;
 
 class Player extends PIXI.Sprite{
-    constructor(x = 0, y = 0, texture, isHit, speed)
+    constructor(x = 0, y = 0, texture, isHit, speed, m, G)
     {
         super(texture);
         this.anchor.set(0.5);
@@ -17,6 +17,8 @@ class Player extends PIXI.Sprite{
         this.pathLength = 0;
         this.ease_k1 = 0;
         this.ease_k2 = 0;
+
+        this.force = new ForceObject(m, G);
     }
 
     status(){
