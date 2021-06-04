@@ -13,6 +13,7 @@ class Enemy extends PIXI.Sprite{
         this.future_y = y;
         this.future_speed_x = speed_x;
         this.future_speed_y = speed_y;
+        this.update()
 
         this.force = new ForceObject(m, G);
     }
@@ -36,6 +37,12 @@ class Enemy extends PIXI.Sprite{
         this.y = this.future_y;
         this.speed_x = this.future_speed_x;
         this.speed_y = this.future_speed_y;
+        if (this.angle > 90 && this.angle < 270 && this.scale.y >= 0){
+            this.scale.y *= -1;
+        }        
+        if ((this.angle < 90 || this.angle > 270) && this.scale.y < 0){
+            this.scale.y *= -1;
+        }
     }
     
 }
