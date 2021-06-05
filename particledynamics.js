@@ -90,7 +90,7 @@ function accelfromgravity(object, current)
         var oy = object.y;
         var cx = current.x;
         var cy = current.y;
-        console.log(ox, oy, cx, cy)
+        //console.log(ox, oy, cx, cy)
         var rsquared = (object.x - current.x) * (object.x - current.x) + (object.y - current.y) * (object.y - current.y);
         ag = object.force.m * current.force.computeg(rsquared);
         ag = object.force.m * current.force.computeg(rsquared);

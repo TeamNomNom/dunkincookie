@@ -102,7 +102,8 @@ function gameloop(delta){
         return;
     
     if (gameloopactive)
-    {        
+    {     
+        directionline()
         player.updatespeed();
         player.move(delta);
         
@@ -115,7 +116,7 @@ function gameloop(delta){
         {
             objects[i].update();
         }
-        console.log("");
+        //console.log("");
     }
 }
 
@@ -305,15 +306,20 @@ function createStartButton()
     button.on("pointerout", function() {this.texture = start;});
     button.on("click", function() {
         createBackground("background");
+        prepareField();
+   
         createPlayer();
+        
         createEnemy();
         createEnemy();
         createGoal();
         
+    
         addSplinePoints();
         addPlayButtonListener();
         addClearbuttonListener();
-       
+        
+        
         app.ticker.add(gameloop);
         app.ticker.minFPS = 0;
         
@@ -353,4 +359,43 @@ function addPlayButtonListener()
         document.getElementById('button-clear').disabled = true;
     });
 }
+
+
+var arrowLoc = [];
+
+function prepareField(){
+
+    var line;
+    var resolution = 30;
+    var amountXarrow = Math.ceil(app.view.width/resolution) + 1;
+    var amountYarrow = Math.ceil((app.view.height + 100)/resolution) + 1;
+
+    for (var row = 0; row < amountYarrow; row++){
+        for (var col = 0; col < amountXarrow; col++){
+            line = new PIXI.Graphics();
+            line.lineStyle(2, 0xD5402B)
+            line.position.x = resolution*col;
+            line.position.y = resolution*row;
+            line.pivot.set(0,140);
+            line.moveTo(1,0);
+            line.lineTo(1, 11);
+            line.anchor = 0.5;
+            arrowLoc.push(line);
+            app.stage.addChild(line);
+        }
+    }
+
+}
+
+function directionline(){
+    for(var j = 0; j < objects.length; j++){
+        for (var i = arrowLoc.length - 1; i >= 0; i--){
+            if(arrowLoc[i].x < player.x || arrowLoc[i].y < player.y){
+                //TODO figuer out how to move lines towards player
+
+            }          
+        }
+    }
+}
+
 
