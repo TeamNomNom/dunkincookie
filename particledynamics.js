@@ -29,7 +29,7 @@ function rk4(x, v, listofallobjects, player, object, h)
 {
     var x1_x = x[0];
     var x1_y = x[1];
-    var v1_x = v[0];
+    var v1_x = v[0];    
     var v1_y = v[1];
     var k1 = accelfunction(listofallobjects, object, player, x1_x, x1_y, v1_x, v1_y, 0);
 
@@ -59,7 +59,7 @@ function rk4(x, v, listofallobjects, player, object, h)
     return [xn_x, xn_y, vn_x, vn_y];
 }
 
-function accelfunction(listofallobjects, object, player, x_x, x_y, v_x, v_y, h)
+function accelfunction(listofallobjects, object, player)
 {
     var atemp = accelfromgravity(object, player);
     var a_x = atemp[0];
@@ -86,14 +86,13 @@ function accelfromgravity(object, current)
     var atemp_x = 0;
     var atemp_y = 0;
     if (current != object) {
-        var ox = object.x;
-        var oy = object.y;
-        var cx = current.x;
-        var cy = current.y;
-        //console.log(ox, oy, cx, cy)
         var rsquared = (object.x - current.x) * (object.x - current.x) + (object.y - current.y) * (object.y - current.y);
-        ag = object.force.m * current.force.computeg(rsquared);
-        ag = object.force.m * current.force.computeg(rsquared);
+        var m = 1;
+        if (object.force != undefined)
+        {
+            m = object.force.m;
+        } 
+        ag = current.force.computeg(rsquared)/ m;
         atemp_x = ag/rsquared * (object.x - current.x)
         atemp_y = ag/rsquared * (object.y - current.y)
     }

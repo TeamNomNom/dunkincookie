@@ -7,10 +7,10 @@ var enemySpeed = 0;
 var playerRadius = 35;
 var enemyRadius = 30;
 
-var PLAYERMASS = 20;
-var PLAYERGRAVVAR = 10000;
-var ENEMYMASS = 3;
-var ENEMYGRAVVAR = 100000;
+var PLAYERMASS = 80000;
+var PLAYERGRAVVAR = 2000;
+var ENEMYMASS = 500;
+var ENEMYGRAVVAR = 8000;
 
 var MARKERLIMIT = 10;
 var markers = [];
@@ -24,6 +24,8 @@ var gameloopactive = false;
 var tau = 1/2;
 var arclengthtable = [];
 var ARCLENGTHSAMPLESIZE = 1000;
+
+var arrowLoc = [];
 
 window.onload = function() {
     app = new PIXI.Application({
@@ -312,12 +314,15 @@ function createStartButton()
         
         createEnemy();
         createEnemy();
+        createEnemy();
+        createEnemy();
         createGoal();
         
     
         addSplinePoints();
         addPlayButtonListener();
         addClearbuttonListener();
+        directionline()
         
         
         app.ticker.add(gameloop);
@@ -360,9 +365,6 @@ function addPlayButtonListener()
     });
 }
 
-
-var arrowLoc = [];
-
 function prepareField(){
 
     var line;
@@ -375,11 +377,10 @@ function prepareField(){
             line = new PIXI.Graphics();
             line.lineStyle(2, 0xD5402B)
             line.position.x = resolution*col;
-            line.position.y = resolution*row;
-            line.pivot.set(0,140);
-            line.moveTo(1,0);
-            line.lineTo(1, 11);
-            line.anchor = 0.5;
+            line.position.y = resolution*row;            
+            line.lineTo(15, 0);
+            line.anchor = 0;
+
             arrowLoc.push(line);
             app.stage.addChild(line);
         }
@@ -390,12 +391,34 @@ function prepareField(){
 function directionline(){
     for(var j = 0; j < objects.length; j++){
         for (var i = arrowLoc.length - 1; i >= 0; i--){
-            if(arrowLoc[i].x < player.x || arrowLoc[i].y < player.y){
-                //TODO figuer out how to move lines towards player
-
-            }          
+            //a = Math.abs(player.x - arrowLoc[i].x);
+            setLineTo(arrowLoc[i]);
         }
     }
+}
+
+function setLineTo(line)
+{
+    var res = odeswitchfunction([line.x, line.y], [0,0], objects, player, line, 1)
+
+    //arrowLoc[i].rotation = Math.atan(b/a); 
+    var factor = 8;
+    var nx = factor *( line.x - res[0]); 
+    var ny = factor *( line.y - res[1]);
+    
+    line.clear();
+    line.lineStyle(2, 0xD5402B)
+    line.position.x = line.x;
+    line.position.y = line.y;
+    if (Math.abs(nx) > 15)
+    {
+        nx = Math.sign(nx) * 15;
+    }
+    if (Math.abs(ny) > 15)
+    {
+        ny = Math.sign(ny) * 15;
+    }
+    line.lineTo(nx, ny);
 }
 
 
