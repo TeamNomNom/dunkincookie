@@ -15,410 +15,413 @@ var ENEMYGRAVVAR = 8000;
 var MARKERLIMIT = 10;
 var markers = [];
 var visibleSplinePoints = [];
-var RENDEREDSPLINESTEPS = 30
+var RENDEREDSPLINESTEPS = 30;
 
 var reachedGoal = false;
 var gameloopactive = false;
 
 //interpolation vars:
-var tau = 1/2;
+var tau = 1 / 2;
 var arclengthtable = [];
 var ARCLENGTHSAMPLESIZE = 1000;
 
 var arrowLoc = [];
 
-window.onload = function() {
-    app = new PIXI.Application({
+window.onload = function () {
+  app = new PIXI.Application({
+    width: 1300,
+    height: 600,
+    backgroundColor: 0xaaaaaa,
+  });
 
-        width: 1300,
-        height: 600,
-        backgroundColor: 0xAAAAAA
-    });
+  document.getElementById("game").append(app.view);
 
-    document.getElementById("game").append(app.view);
-    
-    app.ticker.speed = 0;
-    app.loader.add("player", "pic/Player1.png");
-    app.loader.add("enemy", "pic/enemy.png");
-    app.loader.add("background", "pic/Background1.png");
-    app.loader.add("title", "pic/Background1.png");
-    app.loader.add("start", "pic/Start1.png");
-    app.loader.add("startOnClick", "pic/Start2.png");
-    app.loader.add("circle", "pic/Circle_new.png")
-    app.loader.add("goal", "pic/Goal.png")
-    app.loader.onComplete.add(Initialisation);
-    app.loader.load();
+  app.ticker.speed = 0;
+  app.loader.add("player", "pic/Player1.png");
+  app.loader.add("enemy", "pic/enemy.png");
+  app.loader.add("background", "pic/Background1.png");
+  app.loader.add("title", "pic/Background1.png");
+  app.loader.add("start", "pic/Start1.png");
+  app.loader.add("startOnClick", "pic/Start2.png");
+  app.loader.add("circle", "pic/Circle_new.png");
+  app.loader.add("goal", "pic/Goal.png");
+  app.loader.onComplete.add(Initialisation);
+  app.loader.load();
 
-    
+  var slider_speed = document.getElementById("speedControl");
+  var output_speed = document.getElementById("valuespeed");
+  output_speed.innerHTML = slider_speed.value;
 
-    var slider_speed = document.getElementById("speedControl");
-    var output_speed = document.getElementById("valuespeed");
-    output_speed.innerHTML = slider_speed.value; 
+  //WILL NOT ERROR ONCE WE MOVED INPUT THINGYS TO PIXIJS
+  slider_speed.oninput = function () {
+    output_speed.innerHTML = this.value;
+    player.setbasespeed(this.value);
+  };
 
-    //WILL NOT ERROR ONCE WE MOVED INPUT THINGYS TO PIXIJS
-    slider_speed.oninput = function(){ 
-        output_speed.innerHTML = this.value;
-        player.setbasespeed(this.value);
-        
-    }
+  var slider_animation = document.getElementById("animationControl");
+  var output_animation = document.getElementById("valueanimation");
+  output_animation.innerHTML = slider_animation.value;
+  slider_animation.oninput = function () {
+    output_animation.innerHTML = this.value;
+    app.ticker.speed = this.value;
+  };
+};
 
-    var slider_animation = document.getElementById("animationControl");
-    var output_animation = document.getElementById("valueanimation");
-    output_animation.innerHTML = slider_animation.value; 
-    slider_animation.oninput = function(){ 
-        output_animation.innerHTML = this.value;
-        app.ticker.speed = this.value;
-    }
-}
+function Initialisation() {
+  console.count("finish loading");
+  start_title = new PIXI.Sprite(app.loader.resources["title"].texture);
+  start_title.scale.set(1.5);
 
-function Initialisation(){
-    console.count("finish loading");
-    start_title = new PIXI.Sprite(app.loader.resources["title"].texture);
-    start_title.scale.set(1.5);
+  start_button = createStartButton();
 
-    start_button = createStartButton();
-  
-    app.stage.addChild(start_title);
-    app.stage.addChild(start_button);
-    
-    document.getElementById('button-play').disabled = true;
-    document.getElementById('button-clear').disabled = true;
+  app.stage.addChild(start_title);
+  app.stage.addChild(start_button);
+
+  document.getElementById("button-play").disabled = true;
+  document.getElementById("button-clear").disabled = true;
 }
 
 //helperfunction returning a somewhat random result from min to max
-function random(min, max)
-{
-    return Math.random() * (max - min) + min;
+function random(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
-//Gameloop which is FPS independn you can set the rate at which this is called 
-//with app.ticker.speed also we can manually skip gameloop calls aswell for 
-//example if some calculation are not done yet or we are waiting for input 
+//Gameloop which is FPS independn you can set the rate at which this is called
+//with app.ticker.speed also we can manually skip gameloop calls aswell for
+//example if some calculation are not done yet or we are waiting for input
 //from the player.
-function gameloop(delta){
-    //console.log("delta    ",delta);
-    //console.log("elapseMS ",app.ticker.elapsedMS );
-    //console.log("FPS      ",app.ticker.FPS);
-    //console.log("speed    ",app.ticker.speed);
-    if (app.ticker.speed == 0)
-        return;
-    
-    if (gameloopactive)
-    {     
-        directionline()
-        player.updatespeed();
-        player.move(delta);
-        
-        for(var i = 0; i < objects.length; i++) 
-        {
-            objects[i].move(objects, player, delta);
-        }
-        
-        for(var i = 0; i < objects.length; i++)
-        {
-            objects[i].update();
-        }
-        //console.log("");
+function gameloop(delta) {
+  //console.log("delta    ",delta);
+  //console.log("elapseMS ",app.ticker.elapsedMS );
+  //console.log("FPS      ",app.ticker.FPS);
+  //console.log("speed    ",app.ticker.speed);
+  if (app.ticker.speed == 0) return;
+
+  if (gameloopactive) {
+    directionline();
+    player.updatespeed();
+    player.move(delta);
+
+    for (var i = 0; i < objects.length; i++) {
+      objects[i].move(objects, player, delta);
     }
+
+    for (var i = 0; i < objects.length; i++) {
+      objects[i].update();
+    }
+    //console.log("");
+  }
 }
 
 //loads Player icon on the Scene
-function createPlayer(){
-    x = random(playerRadius, (app.view.width / 5 - playerRadius));
-    y = random(playerRadius, app.view.height - playerRadius);
-    player = new Player(x, y, app.loader.resources["player"].texture, false, playerSpeed, PLAYERMASS, PLAYERGRAVVAR);
-    app.stage.addChild(player);
+function createPlayer() {
+  x = random(playerRadius, app.view.width / 5 - playerRadius);
+  y = random(playerRadius, app.view.height - playerRadius);
+  player = new Player(
+    x,
+    y,
+    app.loader.resources["player"].texture,
+    false,
+    playerSpeed,
+    PLAYERMASS,
+    PLAYERGRAVVAR
+  );
+  app.stage.addChild(player);
 }
 
 //loads Player icon on the Scene
-function createEnemy(){
-    x = random(enemyRadius, app.view.width - enemyRadius);
-    y = random(enemyRadius, app.view.height - enemyRadius);
-    enemy = new Enemy(x, y, app.loader.resources["enemy"].texture, false, enemySpeed, enemySpeed, ENEMYMASS, ENEMYGRAVVAR);
-    app.stage.addChild(enemy);
-    objects.push(enemy)
+function createEnemy() {
+  x = random(enemyRadius, app.view.width - enemyRadius);
+  y = random(enemyRadius, app.view.height - enemyRadius);
+  enemy = new Enemy(
+    x,
+    y,
+    app.loader.resources["enemy"].texture,
+    false,
+    enemySpeed,
+    enemySpeed,
+    ENEMYMASS,
+    ENEMYGRAVVAR
+  );
+  app.stage.addChild(enemy);
+  objects.push(enemy);
 }
 
 //loads Player icon on the Scene
-function createGoal(){
-    x = random(app.view.width - (app.view.width / 5 - playerRadius), app.view.width);
-    y = random(playerRadius, app.view.height - playerRadius);
-    goal = new Goal(x, y, app.loader.resources["goal"].texture, false);
-    app.stage.addChild(goal);
-
+function createGoal() {
+  x = random(
+    app.view.width - (app.view.width / 5 - playerRadius),
+    app.view.width
+  );
+  y = random(playerRadius, app.view.height - playerRadius);
+  goal = new Goal(x, y, app.loader.resources["goal"].texture, false);
+  app.stage.addChild(goal);
 }
 
-//sets Marker (ControlPoint) to the Scene 
-function setmarker(){
-    if (gameloopactive || reachedGoal)
-        return;
-    if (markers.length >= MARKERLIMIT)
-        return;
-    x = app.renderer.plugins.interaction.mouse.global.x;
-    y = app.renderer.plugins.interaction.mouse.global.y;
-    marker = new Marker(x, y, app.loader.resources["circle"].texture);
-    app.stage.addChild(marker);
-    markers.push(marker);
-    document.getElementById('button-play').disabled = false;
-    document.getElementById('button-clear').disabled = false;
-    addSplinePoints();
+//sets Marker (ControlPoint) to the Scene
+function setmarker() {
+  if (gameloopactive || reachedGoal) return;
+  if (markers.length >= MARKERLIMIT) return;
+  x = app.renderer.plugins.interaction.mouse.global.x;
+  y = app.renderer.plugins.interaction.mouse.global.y;
+  marker = new Marker(x, y, app.loader.resources["circle"].texture);
+  app.stage.addChild(marker);
+  markers.push(marker);
+  document.getElementById("button-play").disabled = false;
+  document.getElementById("button-clear").disabled = false;
+  addSplinePoints();
 }
 
 //add spline points for every curve between control points
-function addSplinePoints()
-{
-    arclengthtable = [];
-    for (let i = 0; i <= markers.length; i++)
-    {
-        //P0
-        if (i == 0 || i == 1){
-            p0 = [player.start_x, player.start_y];
-        } else {
-            p0 = [markers[i-2].x, markers[i-2].y];
-        }
-
-        //P1
-        if (i == 0) {
-            p1 = [player.start_x, player.start_y];
-        } else {
-            p1 = [markers[i-1].x, markers[i-1].y];
-        }
-
-        //P2
-        if (i == markers.length) {
-            p2 = [goal.x, goal.y];
-        } else {            
-            p2 = [markers[i].x, markers[i].y];
-        }
-
-        //P3
-        if (i + 1 == markers.length || i == markers.length) {
-            p3 = [goal.x, goal.y];
-        } else {            
-            p3 = [markers[i+1].x, markers[i+1].y];
-        }
-
-        addSingleSpline(p0, p1, p2, p3)
+function addSplinePoints() {
+  arclengthtable = [];
+  for (let i = 0; i <= markers.length; i++) {
+    //P0
+    if (i == 0 || i == 1) {
+      p0 = [player.start_x, player.start_y];
+    } else {
+      p0 = [markers[i - 2].x, markers[i - 2].y];
     }
-    addVisibleSplinePoint(RENDEREDSPLINESTEPS);
+
+    //P1
+    if (i == 0) {
+      p1 = [player.start_x, player.start_y];
+    } else {
+      p1 = [markers[i - 1].x, markers[i - 1].y];
+    }
+
+    //P2
+    if (i == markers.length) {
+      p2 = [goal.x, goal.y];
+    } else {
+      p2 = [markers[i].x, markers[i].y];
+    }
+
+    //P3
+    if (i + 1 == markers.length || i == markers.length) {
+      p3 = [goal.x, goal.y];
+    } else {
+      p3 = [markers[i + 1].x, markers[i + 1].y];
+    }
+
+    addSingleSpline(p0, p1, p2, p3);
+  }
+  addVisibleSplinePoint(RENDEREDSPLINESTEPS);
 }
 
-//add spline points for a curve between 2 control points p1 and p2 
+//add spline points for a curve between 2 control points p1 and p2
 //and helper control points p0 and p3
-function addSingleSpline(p0, p1, p2, p3)
-{
-    for (let i = 1; i < ARCLENGTHSAMPLESIZE; i++)
-    {
-        t = i / ARCLENGTHSAMPLESIZE;
+function addSingleSpline(p0, p1, p2, p3) {
+  for (let i = 1; i < ARCLENGTHSAMPLESIZE; i++) {
+    t = i / ARCLENGTHSAMPLESIZE;
 
-        x = catmullrom(t, p0[0], p1[0], p2[0], p3[0]);
-        y = catmullrom(t, p0[1], p1[1], p2[1], p3[1]);
+    x = catmullrom(t, p0[0], p1[0], p2[0], p3[0]);
+    y = catmullrom(t, p0[1], p1[1], p2[1], p3[1]);
 
-        addArclengthEntry(x, y);        
-    }
+    addArclengthEntry(x, y);
+  }
 }
 
 //calculate value using matrix calculation.
-function catmullrom(t, p0, p1, p2, p3)
-{
-    return tau * (
-        (2 * p1) +
-        (-p0 + p2) * t + 
-        (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t +
-        (-p0 + 3 *p1 -3 * p2 + p3) * t * t * t 
-    );
+function catmullrom(t, p0, p1, p2, p3) {
+  return (
+    tau *
+    (2 * p1 +
+      (-p0 + p2) * t +
+      (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t +
+      (-p0 + 3 * p1 - 3 * p2 + p3) * t * t * t)
+  );
 }
 
 //Add Point to Arclength Table
-function addArclengthEntry(x, y)
-{
-    arclength = 0;
-    totalength = 0;
-    if (arclengthtable.length != 0)
-    {
-        prev = arclengthtable[arclengthtable.length - 1];
-        dist_x = x - prev.x;
-        dist_y = y - prev.y;
-        arclength = Math.sqrt(dist_x *dist_x + dist_y *dist_y);
-        totalength = prev.totalLengthTillHere;
-    }
-    entry = new ArclengthtableEntry(x, y, arclength, totalength);
-    arclengthtable.push(entry);
+function addArclengthEntry(x, y) {
+  arclength = 0;
+  totalength = 0;
+  if (arclengthtable.length != 0) {
+    prev = arclengthtable[arclengthtable.length - 1];
+    dist_x = x - prev.x;
+    dist_y = y - prev.y;
+    arclength = Math.sqrt(dist_x * dist_x + dist_y * dist_y);
+    totalength = prev.totalLengthTillHere;
+  }
+  entry = new ArclengthtableEntry(x, y, arclength, totalength);
+  arclengthtable.push(entry);
 }
 
-//Add a spline point 
-function addVisibleSplinePoint(sample)
-{
-    visibleSplinePoints.forEach(c => { app.stage.removeChild(c); });
-    visibleSplinePoints = []
-    for(let i = 0; i < arclengthtable.length; i += sample)
-    {
-        let x = arclengthtable[i].x;
-        let y = arclengthtable[i].y;
+//Add a spline point
+function addVisibleSplinePoint(sample) {
+  visibleSplinePoints.forEach((c) => {
+    app.stage.removeChild(c);
+  });
+  visibleSplinePoints = [];
+  for (let i = 0; i < arclengthtable.length; i += sample) {
+    let x = arclengthtable[i].x;
+    let y = arclengthtable[i].y;
 
-        graphics = new PIXI.Graphics();
-        graphics.beginFill(0x45f542);
-        graphics.drawCircle(x, y, 3); // drawCircle(x, y, radius)
-        graphics.endFill();
-        visibleSplinePoints.push(graphics);
-        app.stage.addChild(graphics);
-    }
+    graphics = new PIXI.Graphics();
+    graphics.beginFill(0x45f542);
+    graphics.drawCircle(x, y, 3); // drawCircle(x, y, radius)
+    graphics.endFill();
+    visibleSplinePoints.push(graphics);
+    app.stage.addChild(graphics);
+  }
 }
 
 // returns first value after passing a goallength in the  arclength table
-function getPosFromArclengthWithDelta(goal)
-{
-    for (i = 0; i < arclengthtable.length; i++)
-    {
-        let e = arclengthtable[i]
-        if(e.totalLengthTillHere > goal)
-            return e;
-    }
-    gameloopactive = false;
-    reachedGoal = true;
-    return arclengthtable[arclengthtable.length-1];
+function getPosFromArclengthWithDelta(goal) {
+  for (i = 0; i < arclengthtable.length; i++) {
+    let e = arclengthtable[i];
+    if (e.totalLengthTillHere > goal) return e;
+  }
+  gameloopactive = false;
+  reachedGoal = true;
+  return arclengthtable[arclengthtable.length - 1];
 }
 
 //Loads Background texture
-function createBackground(resourcename)
-{
-    bg = new PIXI.Sprite(app.loader.resources[resourcename].texture);
-    bg.scale.set(1.5)
-    app.stage.addChild(bg);
+function createBackground(resourcename) {
+  bg = new PIXI.Sprite(app.loader.resources[resourcename].texture);
+  bg.scale.set(1.5);
+  app.stage.addChild(bg);
 }
 
 //Creates the Start Button, including a an listener which starts the game itself.
-function createStartButton()
-{
-    start = app.loader.resources['start'].texture;
-    startOnClick = app.loader.resources['startOnClick'].texture;
+function createStartButton() {
+  start = app.loader.resources["start"].texture;
+  startOnClick = app.loader.resources["startOnClick"].texture;
 
-    let button = new PIXI.Sprite(start);
+  let button = new PIXI.Sprite(start);
 
-    button.anchor.set(0.5);
-    button.scale.set(0.6);
+  button.anchor.set(0.5);
+  button.scale.set(0.6);
 
-    button.x = app.renderer.width / 2;
-    button.y = app.renderer.height / 2;
+  button.x = app.renderer.width / 2;
+  button.y = app.renderer.height / 2;
 
-    button.interactive = true;
-    button.buttonMode = true;
+  button.interactive = true;
+  button.buttonMode = true;
 
-    button.on("pointerover", function() {this.texture = startOnClick;});
-    button.on("pointerout", function() {this.texture = start;});
-    button.on("click", function() {
-        createBackground("background");
-        prepareField();
-   
-        createPlayer();
-        
-        createEnemy();
-        createEnemy();
-        createEnemy();
-        createEnemy();
-        createGoal();
-        
-    
-        addSplinePoints();
-        addPlayButtonListener();
-        addClearbuttonListener();
-        directionline()
-        
-        
-        app.ticker.add(gameloop);
-        app.ticker.minFPS = 0;
-        
-    
-        app.stage.removeChild(start_title);
-        app.stage.removeChild(start_button);
-    
-        app.renderer.plugins.interaction.on("pointerdown", setmarker);
-    });
+  button.on("pointerover", function () {
+    this.texture = startOnClick;
+  });
+  button.on("pointerout", function () {
+    this.texture = start;
+  });
+  button.on("click", function () {
+    createBackground("background");
+    prepareField();
 
-    return button;
+    createPlayer();
+
+    createEnemy();
+    createEnemy();
+    createEnemy();
+    createEnemy();
+    createGoal();
+
+    addSplinePoints();
+    addPlayButtonListener();
+    addClearbuttonListener();
+    directionline();
+
+    app.ticker.add(gameloop);
+    app.ticker.minFPS = 0;
+
+    app.stage.removeChild(start_title);
+    app.stage.removeChild(start_button);
+
+    app.renderer.plugins.interaction.on("pointerdown", setmarker);
+  });
+
+  return button;
 }
 
-
 // add listener to the Clear Markers button, which clears the markers
-function addClearbuttonListener()
-{
-    document.getElementById('button-clear').addEventListener('click', function() {
-        markers.forEach(m => { app.stage.removeChild(m); });        
-        markers = [];
+function addClearbuttonListener() {
+  document
+    .getElementById("button-clear")
+    .addEventListener("click", function () {
+      markers.forEach((m) => {
+        app.stage.removeChild(m);
+      });
+      markers = [];
 
-        document.getElementById('button-play').disabled = true;
-        document.getElementById('button-clear').disabled = true;
-        
-        addSplinePoints();
+      document.getElementById("button-play").disabled = true;
+      document.getElementById("button-clear").disabled = true;
+
+      addSplinePoints();
     });
 }
 
 //add listener to the Play Button, which starts the gameloop
-function addPlayButtonListener()
-{
-    document.getElementById('button-play').addEventListener('click', function() {        
-        gameloopactive = true;
-        player.setEaseParameters(arclengthtable[arclengthtable.length-1].totalLengthTillHere);
+function addPlayButtonListener() {
+  document.getElementById("button-play").addEventListener("click", function () {
+    gameloopactive = true;
+    player.setEaseParameters(
+      arclengthtable[arclengthtable.length - 1].totalLengthTillHere
+    );
 
-        document.getElementById('button-play').disabled = true;
-        document.getElementById('button-clear').disabled = true;
-    });
+    document.getElementById("button-play").disabled = true;
+    document.getElementById("button-clear").disabled = true;
+  });
 }
 
-function prepareField(){
+function prepareField() {
+  var line;
+  var resolution = 30;
+  var amountXarrow = Math.ceil(app.view.width / resolution) + 1;
+  var amountYarrow = Math.ceil((app.view.height + 100) / resolution) + 1;
 
-    var line;
-    var resolution = 30;
-    var amountXarrow = Math.ceil(app.view.width/resolution) + 1;
-    var amountYarrow = Math.ceil((app.view.height + 100)/resolution) + 1;
+  for (var row = 0; row < amountYarrow; row++) {
+    for (var col = 0; col < amountXarrow; col++) {
+      line = new PIXI.Graphics();
+      line.lineStyle(2, 0xd5402b);
+      line.position.x = resolution * col;
+      line.position.y = resolution * row;
+      line.lineTo(15, 0);
+      line.anchor = 0;
 
-    for (var row = 0; row < amountYarrow; row++){
-        for (var col = 0; col < amountXarrow; col++){
-            line = new PIXI.Graphics();
-            line.lineStyle(2, 0xD5402B)
-            line.position.x = resolution*col;
-            line.position.y = resolution*row;            
-            line.lineTo(15, 0);
-            line.anchor = 0;
-
-            arrowLoc.push(line);
-            app.stage.addChild(line);
-        }
+      arrowLoc.push(line);
+      app.stage.addChild(line);
     }
-
+  }
 }
 
-function directionline(){
-    for(var j = 0; j < objects.length; j++){
-        for (var i = arrowLoc.length - 1; i >= 0; i--){
-            //a = Math.abs(player.x - arrowLoc[i].x);
-            setLineTo(arrowLoc[i]);
-        }
+function directionline() {
+  for (var j = 0; j < objects.length; j++) {
+    for (var i = arrowLoc.length - 1; i >= 0; i--) {
+      //a = Math.abs(player.x - arrowLoc[i].x);
+      setLineTo(arrowLoc[i]);
     }
+  }
 }
 
-function setLineTo(line)
-{
-    var res = odeswitchfunction([line.x, line.y], [0,0], objects, player, line, 1)
+function setLineTo(line) {
+  var res = simpleeuler(
+    [line.x, line.y],
+    [0, 0],
+    objects,
+    player,
+    line,
+    1,
+    0,
+    0
+  );
 
-    //arrowLoc[i].rotation = Math.atan(b/a); 
-    var factor = 8;
-    var nx = factor *( line.x - res[0]); 
-    var ny = factor *( line.y - res[1]);
-    
-    line.clear();
-    line.lineStyle(2, 0xD5402B)
-    line.position.x = line.x;
-    line.position.y = line.y;
-    if (Math.abs(nx) > 15)
-    {
-        nx = Math.sign(nx) * 15;
-    }
-    if (Math.abs(ny) > 15)
-    {
-        ny = Math.sign(ny) * 15;
-    }
-    line.lineTo(nx, ny);
+  //arrowLoc[i].rotation = Math.atan(b/a);
+  var factor = 1;
+  var nx = factor * res[2];
+  var ny = factor * res[3];
+
+  line.clear();
+  line.lineStyle(2, 0xd5402b);
+  line.position.x = line.x;
+  line.position.y = line.y;
+  if (Math.abs(nx) > 15) {
+    nx = Math.sign(nx) * 15;
+  }
+  if (Math.abs(ny) > 15) {
+    ny = Math.sign(ny) * 15;
+  }
+  line.lineTo(nx, ny);
 }
-
-
