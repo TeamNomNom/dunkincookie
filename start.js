@@ -25,7 +25,10 @@ var tau = 1 / 2;
 var arclengthtable = [];
 var ARCLENGTHSAMPLESIZE = 1000;
 
+var showVectorField = false;
+var showTrajectories = false;
 var arrowLoc = [];
+var trajectoriespoints = [];
 
 window.onload = function () {
   app = new PIXI.Application({
@@ -99,6 +102,7 @@ function gameloop(delta) {
 
   if (gameloopactive) {
     directionline();
+    drawTrajectories();
     player.updatespeed();
     player.move(delta);
 
@@ -375,10 +379,8 @@ function prepareField() {
   for (var row = 0; row < amountYarrow; row++) {
     for (var col = 0; col < amountXarrow; col++) {
       line = new PIXI.Graphics();
-      line.lineStyle(2, 0xd5402b);
       line.position.x = resolution * col;
       line.position.y = resolution * row;
-      line.lineTo(15, 0);
       line.anchor = 0;
 
       arrowLoc.push(line);
@@ -387,7 +389,31 @@ function prepareField() {
   }
 }
 
+function drawTrajectories() {
+  for (var i = 0; i < trajectoriespoints.length; i++) {
+    app.stage.removeChild(trajectoriespoints[i]);
+  }
+  trajectoriespoints = [];
+  if (!showTrajectories) return;
+  for (var i = 0; i < objects.length; i++) {
+    var positionlog = objects[i].pos_log;
+    for (var p = 0; p < positionlog.length; p++) {
+      point = new PIXI.Graphics();
+      point.beginFill(0xff00ff);
+      point.drawCircle(positionlog[p][0], positionlog[p][1], 2); // drawCircle(x, y, radius)
+      point.endFill();
+
+      trajectoriespoints.push(point);
+      app.stage.addChild(point);
+    }
+  }
+}
+
 function directionline() {
+  if (!showVectorField) {
+    clearVectorfield();
+    return;
+  }
   for (var j = 0; j < objects.length; j++) {
     for (var i = arrowLoc.length - 1; i >= 0; i--) {
       //a = Math.abs(player.x - arrowLoc[i].x);
@@ -396,17 +422,14 @@ function directionline() {
   }
 }
 
+function clearVectorfield() {
+  for (var i = arrowLoc.length - 1; i >= 0; i--) {
+    arrowLoc[i].clear();
+  }
+}
+
 function setLineTo(line) {
-  var res = simpleeuler(
-    [line.x, line.y],
-    [0, 0],
-    objects,
-    player,
-    line,
-    1,
-    0,
-    0
-  );
+  var res = rk1([line.x, line.y], [0, 0], objects, player, line, 1, 0, 0);
 
   //arrowLoc[i].rotation = Math.atan(b/a);
   var factor = 1;

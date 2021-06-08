@@ -1,3 +1,4 @@
+var deltadistancetraj = 3;
 class Enemy extends PIXI.Sprite {
   constructor(x = 0, y = 0, texture, hasHit, speed_x, speed_y, m, G) {
     super(texture);
@@ -15,6 +16,7 @@ class Enemy extends PIXI.Sprite {
     this.future_speed_y = speed_y;
     this.future_omega = 0;
     this.future_angle = 0;
+    this.pos_log = [[this.x, this.y]];
     this.update();
 
     this.force = new ForceObject(m, G);
@@ -46,6 +48,19 @@ class Enemy extends PIXI.Sprite {
   }
 
   update() {
+    var x = Math.abs(this.future_x - this.pos_log[this.pos_log.length - 1][0]);
+    var y = Math.abs(this.future_x - this.pos_log[this.pos_log.length - 1][1]);
+    if (
+      Math.abs(this.future_x - this.pos_log[this.pos_log.length - 1][0]) >
+        deltadistancetraj ||
+      Math.abs(this.future_y - this.pos_log[this.pos_log.length - 1][1]) >
+        deltadistancetraj
+    ) {
+      this.pos_log.push([this.x, this.y]);
+    }
+    if (this.pos_log.length > 50) {
+      this.pos_log.shift();
+    }
     this.x = this.future_x;
     this.y = this.future_y;
     this.speed_x = this.future_speed_x;
