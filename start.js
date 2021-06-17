@@ -30,6 +30,8 @@ var showTrajectories = false;
 var arrowLoc = [];
 var trajectoriespoints = [];
 
+var borders = [];
+
 window.onload = function () {
   app = new PIXI.Application({
     width: 1300,
@@ -40,14 +42,16 @@ window.onload = function () {
   document.getElementById("game").append(app.view);
 
   app.ticker.speed = 0;
-  app.loader.add("player", "pic/Player1.png");
-  app.loader.add("enemy", "pic/enemy.png");
+  app.loader.add("player", "pic/Player2.png");
+  app.loader.add("enemy", "pic/enemy3.png");
   app.loader.add("background", "pic/Background1.png");
   app.loader.add("title", "pic/Background1.png");
   app.loader.add("start", "pic/Start1.png");
   app.loader.add("startOnClick", "pic/Start2.png");
   app.loader.add("circle", "pic/Circle_new.png");
   app.loader.add("goal", "pic/Goal.png");
+  app.loader.add("wallHori", "pic/WallHori.png");
+  app.loader.add("wallVerti", "pic/WallVerti.png");
   app.loader.onComplete.add(Initialisation);
   app.loader.load();
 
@@ -109,6 +113,10 @@ function gameloop(delta) {
 
     for (var i = 0; i < objects.length; i++) {
       objects[i].move(objects, player, delta);
+    }
+    for (var i = 0; i < objects.length; i++) {
+      detectCollision(objects, player, delta);
+      //if wall instead varonoi thingy
     }
 
     for (var i = 0; i < objects.length; i++) {
@@ -325,6 +333,8 @@ function createStartButton() {
     createEnemy();
     createGoal();
 
+    createBorders();
+
     addSplinePoints();
     addPlayButtonListener();
     addClearbuttonListener();
@@ -342,11 +352,16 @@ function createStartButton() {
     app.stage.removeChild(start_button);
 
     app.renderer.plugins.interaction.on("pointerdown", setmarker);
+    app.renderer.plugins.interaction.on("pointerdown", mystuff);
   });
 
   return button;
 }
-
+function mystuff() {
+  x = app.renderer.plugins.interaction.mouse.global.x;
+  y = app.renderer.plugins.interaction.mouse.global.y;
+  console.log(x, y);
+}
 // add listener to the Clear Markers button, which clears the markers
 function addClearbuttonListener() {
   document
@@ -510,4 +525,48 @@ function setLineTo(line) {
     ny = Math.sign(ny) * 15;
   }
   line.lineTo(nx, ny);
+}
+
+function createBorders() {
+  border0 = new Wall(
+    (x = 0),
+    (y = 0),
+    (texture = app.loader.resources["wallVerti"].texture),
+    (hasHit = false),
+    (anchor_x = 0),
+    (anchor_y = 0)
+  );
+  border1 = new Wall(
+    (x = 0),
+    (y = 0),
+    (texture = app.loader.resources["wallHori"].texture),
+    (hasHit = false),
+    (anchor_x = 0),
+    (anchor_y = 0)
+  );
+  border2 = new Wall(
+    (x = 1300),
+    (y = 0),
+    (texture = app.loader.resources["wallVerti"].texture),
+    (hasHit = false),
+    (anchor_x = 1),
+    (anchor_y = 0)
+  );
+  border3 = new Wall(
+    (x = 0),
+    (y = 600),
+    (texture = app.loader.resources["wallHori"].texture),
+    (hasHit = false),
+    (anchor_x = 0),
+    (anchor_y = 1)
+  );
+
+  app.stage.addChild(border0);
+  app.stage.addChild(border1);
+  app.stage.addChild(border2);
+  app.stage.addChild(border3);
+  borders.push(border0);
+  borders.push(border1);
+  borders.push(border2);
+  borders.push(border3);
 }
