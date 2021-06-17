@@ -3,8 +3,8 @@ var EASEPERCENTAGE = 0.4;
 class Player extends PIXI.Sprite {
   constructor(x = 0, y = 0, texture, isHit, speed, m, G) {
     super(texture);
-    this.anchor.set(0.5);
-    this.scale.set(0.22);
+    this.anchor.set(0.5, 0.5);
+    //this.scale.set(0.22);
     this.isHit = false;
     this.basespeed = speed; // px/delta
     this.speed = 0;
