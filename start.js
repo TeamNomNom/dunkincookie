@@ -52,6 +52,7 @@ window.onload = function () {
   app.loader.add("goal", "pic/Goal.png");
   app.loader.add("wallHori", "pic/WallHori.png");
   app.loader.add("wallVerti", "pic/WallVerti.png");
+  app.loader.add("gameOver", "pic/GameOver.png");
   app.loader.onComplete.add(Initialisation);
   app.loader.load();
 
@@ -180,7 +181,6 @@ function setmarker() {
   marker = new Marker(x, y, app.loader.resources["circle"].texture);
   app.stage.addChild(marker);
   markers.push(marker);
-  document.getElementById("button-restart").disabled = false;
   document.getElementById("button-play").disabled = false;
   document.getElementById("button-clear").disabled = false;
   addSplinePoints();
@@ -299,6 +299,16 @@ function createBackground(resourcename) {
   app.stage.addChild(bg);
 }
 
+function GameOver() {
+  for (var c = app.stage.children.length - 1; c >= 0; c--) {
+    app.stage.removeChild(app.stage.children[c]);
+  }
+  bg = new PIXI.Sprite(app.loader.resources["gameOver"].texture);
+  bg.width = 1300;
+  bg.height = 600;
+  app.stage.addChild(bg);
+}
+
 //Creates the Start Button, including a an listener which starts the game itself.
 function createStartButton() {
   start = app.loader.resources["start"].texture;
@@ -342,7 +352,6 @@ function createStartButton() {
     addTrajectorpointsButtonListener();
     addRK4ButtonListener();
     addEulerButtonListener();
-    addRestartButtonListener();
     directionline();
 
     app.ticker.add(gameloop);
@@ -390,26 +399,6 @@ function addPlayButtonListener() {
     document.getElementById("button-clear").disabled = true;
     document.getElementById("button-restart").disabled = false;
   });
-}
-
-function addRestartButtonListener() {
-  document
-    .getElementById("button-restart")
-    .addEventListener("click", function () {
-      restart();
-      document.getElementById("button-restart").disabled = true;
-      document.getElementById("button-play").disabled = false;
-    });
-}
-
-function restart() {
-  for (var c = app.stage.children.length - 1; c >= 0; c--) {
-    app.stage.removeChild(app.stage.children[c]);
-  }
-  gameloopactive = false;
-  reachedGoal = false;
-  markers = [];
-  app.loader.load();
 }
 
 function addVectorFieldButtonListener() {
