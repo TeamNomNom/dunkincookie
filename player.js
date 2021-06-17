@@ -32,6 +32,20 @@ class Player extends PIXI.Sprite {
     this.x = entry.x;
     this.y = entry.y;
     this.pathposition = entry.totalLengthTillHere;
+    if (
+      this.x + this.width / 2 > rectx &&
+      this.x - this.width / 2 < rectx + rectwidth &&
+      this.y + this.height / 2 > recty &&
+      this.y - this.height / 2 < recty + rectheight
+    ) {
+      if (!voronoiAnimation) {
+        voronoicounter = voronoifactor * 4;
+        gameloopactive = false;
+        needtocalcvoronoipoints = true;
+        needtocalcvoronoistuff = true;
+      }
+      voronoiAnimation = true;
+    }
   }
 
   setbasespeed(val) {
