@@ -34,7 +34,7 @@ var borders = [];
 
 var seedpoints = [];
 var drawnseedpoints = [];
-var heatmap = true;
+var heatmap = false;
 var block;
 var voronoiAnimation = false;
 var voronoipolys = [];
@@ -98,7 +98,6 @@ function Initialisation() {
   app.stage.addChild(start_title);
   app.stage.addChild(start_button);
 
-  document.getElementById("button-restart").disabled = true;
   document.getElementById("button-play").disabled = true;
   document.getElementById("button-clear").disabled = true;
 }
@@ -359,6 +358,7 @@ function GameOver() {
   bg.width = 1300;
   bg.height = 600;
   app.stage.addChild(bg);
+  app.ticker.started = false;
 }
 
 //Creates the Start Button, including a an listener which starts the game itself.
@@ -444,7 +444,6 @@ function addPlayButtonListener() {
 
     document.getElementById("button-play").disabled = true;
     document.getElementById("button-clear").disabled = true;
-    document.getElementById("button-restart").disabled = false;
   });
 }
 
