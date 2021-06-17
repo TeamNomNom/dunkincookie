@@ -80,6 +80,7 @@ function Initialisation() {
   app.stage.addChild(start_title);
   app.stage.addChild(start_button);
 
+  document.getElementById("button-restart").disabled = true;
   document.getElementById("button-play").disabled = true;
   document.getElementById("button-clear").disabled = true;
 }
@@ -101,7 +102,6 @@ function gameloop(delta) {
   if (app.ticker.speed == 0) return;
 
   if (gameloopactive) {
-    console.log(useRK4);
     directionline();
     drawTrajectories();
     player.updatespeed();
@@ -172,6 +172,7 @@ function setmarker() {
   marker = new Marker(x, y, app.loader.resources["circle"].texture);
   app.stage.addChild(marker);
   markers.push(marker);
+  document.getElementById("button-restart").disabled = false;
   document.getElementById("button-play").disabled = false;
   document.getElementById("button-clear").disabled = false;
   addSplinePoints();
@@ -331,6 +332,7 @@ function createStartButton() {
     addTrajectorpointsButtonListener();
     addRK4ButtonListener();
     addEulerButtonListener();
+    addRestartButtonListener();
     directionline();
 
     app.ticker.add(gameloop);
@@ -354,7 +356,6 @@ function addClearbuttonListener() {
         app.stage.removeChild(m);
       });
       markers = [];
-
       document.getElementById("button-play").disabled = true;
       document.getElementById("button-clear").disabled = true;
 
@@ -372,7 +373,28 @@ function addPlayButtonListener() {
 
     document.getElementById("button-play").disabled = true;
     document.getElementById("button-clear").disabled = true;
+    document.getElementById("button-restart").disabled = false;
   });
+}
+
+function addRestartButtonListener() {
+  document
+    .getElementById("button-restart")
+    .addEventListener("click", function () {
+      restart();
+      document.getElementById("button-restart").disabled = true;
+      document.getElementById("button-play").disabled = false;
+    });
+}
+
+function restart() {
+  for (var c = app.stage.children.length - 1; c >= 0; c--) {
+    app.stage.removeChild(app.stage.children[c]);
+  }
+  gameloopactive = false;
+  reachedGoal = false;
+  markers = [];
+  app.loader.load();
 }
 
 function addVectorFieldButtonListener() {
