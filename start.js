@@ -105,6 +105,7 @@ function gameloop(delta) {
   if (app.ticker.speed == 0) return;
 
   if (gameloopactive) {
+    console.log(useRK4);
     directionline();
     drawTrajectories();
     player.updatespeed();
@@ -336,6 +337,10 @@ function createStartButton() {
     addSplinePoints();
     addPlayButtonListener();
     addClearbuttonListener();
+    addVectorFieldButtonListener();
+    addTrajectorpointsButtonListener();
+    addRK4ButtonListener();
+    addEulerButtonListener();
     directionline();
 
     app.ticker.add(gameloop);
@@ -383,6 +388,42 @@ function addPlayButtonListener() {
     document.getElementById("button-play").disabled = true;
     document.getElementById("button-clear").disabled = true;
   });
+}
+
+function addVectorFieldButtonListener() {
+  document
+    .getElementById("button-vectorfield")
+    .addEventListener("click", function () {
+      if (!showVectorField) showVectorField = true;
+      else showVectorField = false;
+    });
+}
+
+function addTrajectorpointsButtonListener() {
+  document
+    .getElementById("button-trajectorpoints")
+    .addEventListener("click", function () {
+      if (!showTrajectories) showTrajectories = true;
+      else showTrajectories = false;
+    });
+}
+
+function addRK4ButtonListener() {
+  document.getElementById("button-rk4").addEventListener("click", function () {
+    useRK4 = true;
+    document.getElementById("button-rk4").disabled = true;
+    document.getElementById("button-euler").disabled = false;
+  });
+}
+
+function addEulerButtonListener() {
+  document
+    .getElementById("button-euler")
+    .addEventListener("click", function () {
+      useRK4 = false;
+      document.getElementById("button-rk4").disabled = false;
+      document.getElementById("button-euler").disabled = true;
+    });
 }
 
 function prepareField() {
