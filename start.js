@@ -65,6 +65,7 @@ window.onload = function () {
   app.loader.add("goal", "pic/Goal.png");
   app.loader.add("wallHori", "pic/WallHori.png");
   app.loader.add("wallVerti", "pic/WallVerti.png");
+  app.loader.add("gameOver", "pic/GameOver.png");
   app.loader.onComplete.add(Initialisation);
   app.loader.load();
 
@@ -97,6 +98,7 @@ function Initialisation() {
   app.stage.addChild(start_title);
   app.stage.addChild(start_button);
 
+  document.getElementById("button-restart").disabled = true;
   document.getElementById("button-play").disabled = true;
   document.getElementById("button-clear").disabled = true;
 }
@@ -349,6 +351,16 @@ function createBackground(resourcename) {
   app.stage.addChild(bg);
 }
 
+function GameOver() {
+  for (var c = app.stage.children.length - 1; c >= 0; c--) {
+    app.stage.removeChild(app.stage.children[c]);
+  }
+  bg = new PIXI.Sprite(app.loader.resources["gameOver"].texture);
+  bg.width = 1300;
+  bg.height = 600;
+  app.stage.addChild(bg);
+}
+
 //Creates the Start Button, including a an listener which starts the game itself.
 function createStartButton() {
   start = app.loader.resources["start"].texture;
@@ -415,7 +427,6 @@ function addClearbuttonListener() {
         app.stage.removeChild(m);
       });
       markers = [];
-
       document.getElementById("button-play").disabled = true;
       document.getElementById("button-clear").disabled = true;
 
@@ -433,6 +444,7 @@ function addPlayButtonListener() {
 
     document.getElementById("button-play").disabled = true;
     document.getElementById("button-clear").disabled = true;
+    document.getElementById("button-restart").disabled = false;
   });
 }
 
