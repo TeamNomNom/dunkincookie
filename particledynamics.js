@@ -140,8 +140,6 @@ function detectCollision(listofallobjects, player, delta) {
       }
     }
   }
-
-  return "hypers";
 }
 
 function checkdistance(obj1, obj2) {

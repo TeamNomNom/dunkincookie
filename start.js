@@ -206,8 +206,24 @@ function createPlayer() {
 
 //loads Player icon on the Scene
 function createEnemy() {
-  x = random(enemyRadius, app.view.width - enemyRadius);
-  y = random(enemyRadius, app.view.height - enemyRadius);
+  yettofoundspot = true;
+  let x, y;
+  while (yettofoundspot) {
+    yettofoundspot = false;
+    x = random(enemyRadius, app.view.width - enemyRadius);
+    y = random(enemyRadius, app.view.height - enemyRadius);
+    if (Math.abs(x - player.x) < 50 && Math.abs(y - player.y) < 50) {
+      yettofoundspot = true;
+    }
+    if (Math.abs(x - goal.x) < 50 && Math.abs(y - goal.y) < 50) {
+      yettofoundspot = true;
+    }
+    objects.forEach((e) => {
+      if (Math.abs(x - e.x) < 20 && Math.abs(y - e.y) < 20) {
+        yettofoundspot = true;
+      }
+    });
+  }
   enemy = new Enemy(
     x,
     y,
@@ -405,13 +421,11 @@ function createStartButton() {
     prepareField();
 
     createPlayer();
-
-    createEnemy();
-    //createEnemy();
-    //createEnemy();
-    //createEnemy();
-    createBlock();
     createGoal();
+    for (var i = random(1, 5); i > 0; i--) {
+      createEnemy();
+    }
+    createBlock();
 
     createBorders();
 
