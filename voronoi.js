@@ -255,5 +255,4 @@ function _getFracturePoints(number) {
     i++;
   }
   return p;
-  //tobeimplemented / too be a line// if i don not care to we done
 }
