@@ -210,8 +210,8 @@ function createEnemy() {
   let x, y;
   while (yettofoundspot) {
     yettofoundspot = false;
-    x = random(enemyRadius, app.view.width - enemyRadius);
-    y = random(enemyRadius, app.view.height - enemyRadius);
+    x = random(enemyRadius + 10, app.view.width - enemyRadius - 10);
+    y = random(enemyRadius + 10, app.view.height - enemyRadius - 10);
     if (Math.abs(x - player.x) < 50 && Math.abs(y - player.y) < 50) {
       yettofoundspot = true;
     }
