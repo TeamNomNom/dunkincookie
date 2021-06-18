@@ -74,11 +74,5 @@ class Enemy extends PIXI.Sprite {
     }
     this.rotation = phi;
     this.omega = this.future_omega;
-    /*if (this.angle > 90 && this.angle < 270 && this.scale.y >= 0){
-            this.scale.y *= -1;
-        }        
-        if ((this.angle < 90 || this.angle > 270) && this.scale.y < 0){
-            this.scale.y *= -1;
-        }*/
   }
 }

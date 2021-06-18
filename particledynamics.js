@@ -1,5 +1,6 @@
 var useRK4 = true;
 
+//switch between rk1 and rk4
 function odeswitchfunction(
   x,
   v,
@@ -17,6 +18,7 @@ function odeswitchfunction(
   }
 }
 
+//rk1 runga kutta function 1st order for acceleration aka simple euler
 function rk1(x, v, listofallobjects, player, object, h, omega, angle) {
   var m = object.force != undefined ? object.force.m : 1;
   var r_y = (object.height * object.scale.x) / 2;
@@ -37,6 +39,7 @@ function rk1(x, v, listofallobjects, player, object, h, omega, angle) {
   return [x2[0], x2[1], v2[0], v2[1], angle2, omega2];
 }
 
+//rk5 runga kutta function 4th order
 function rk4(x, v, listofallobjects, player, object, h, omega, angle) {
   var m = object.force != undefined ? object.force.m : 1;
   var r_y = (object.height * object.scale.x) / 2;
@@ -87,6 +90,7 @@ function rk4(x, v, listofallobjects, player, object, h, omega, angle) {
   return [xn_x, xn_y, vn_x, vn_y, angle_final, omega_final];
 }
 
+//calculate the total forces / acutally is just acceleration cuz the rkx function just devides by m if needed
 function accelfunction(listofallobjects, object, player, x, y) {
   var atemp = accelfromgravity(object, player, x, y);
   var a_x = atemp[0];
@@ -107,6 +111,7 @@ function accelfunction(listofallobjects, object, player, x, y) {
   // add static arrows to a
 }
 
+// calc acceleration between 2 objects
 function accelfromgravity(object, current, x, y) {
   var atemp_x = 0;
   var atemp_y = 0;

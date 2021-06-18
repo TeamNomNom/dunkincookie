@@ -557,6 +557,7 @@ function addEulerButtonListener() {
     });
 }
 
+//prepare arrow field
 function prepareField() {
   var line;
   var resolution = 30;
@@ -576,6 +577,7 @@ function prepareField() {
   }
 }
 
+//draw trajectories
 function drawTrajectories() {
   for (var i = 0; i < trajectoriespoints.length; i++) {
     app.stage.removeChild(trajectoriespoints[i]);
@@ -596,6 +598,7 @@ function drawTrajectories() {
   }
 }
 
+// draw arrow field
 function directionline() {
   if (!showVectorField) {
     clearVectorfield();
@@ -609,6 +612,7 @@ function directionline() {
   }
 }
 
+//clear vector field
 function clearVectorfield() {
   for (var i = arrowLoc.length - 1; i >= 0; i--) {
     arrowLoc[i].clear();
@@ -636,6 +640,7 @@ function setLineTo(line) {
   line.lineTo(nx, ny);
 }
 
+//create borders
 function createBorders() {
   border0 = new Wall(
     (x = 0),

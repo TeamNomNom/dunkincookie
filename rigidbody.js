@@ -1,3 +1,4 @@
+//check if a collision happened
 function detectCollision(listofallobjects, player, delta) {
   for (var i = 0; i < listofallobjects.length; i++) {
     var current = listofallobjects[i];
@@ -16,6 +17,7 @@ function detectCollision(listofallobjects, player, delta) {
   }
 }
 
+//check distance betwenn 2 objects
 function checkdistance(obj1, obj2) {
   if (obj1 instanceof Enemy) {
     var x_1 = obj1.future_x;
@@ -43,6 +45,7 @@ function checkdistance(obj1, obj2) {
   return false;
 }
 
+// handle collision between 2 enemies
 function handlecollision(current, check) {
   var v1_x = current.future_speed_x;
   var v1_y = current.future_speed_y;
@@ -70,6 +73,7 @@ function handlecollision(current, check) {
     v2_y - ((2 * m_2) / (m_1 + m_2)) * (v2_y - v1_y) * n_y * n_y;
 }
 
+// handle collision with wall
 function handlewall(current) {
   radius = current.width / 2;
   if (current.future_x - radius - 5 < borders[0].width) {
@@ -91,6 +95,7 @@ function handlewall(current) {
   }
 }
 
+// handle collision with player
 function handleplayer(current, player) {
   if (checkdistance(current, player)) {
     for (var i = 0; i < objects.length; i++) {

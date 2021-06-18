@@ -76,6 +76,7 @@ function goOverAllPoints() {
   }
 }
 
+// color for heatmap
 function getColor(distance) {
   let devider = 10;
   if (distance < devider) return 0xff0000;
@@ -118,6 +119,7 @@ function getColor(distance) {
   return 0x9400d3;
 }
 
+//find closest seedpoint for distance function
 function findClosestSeedPoint(x, y) {
   shortest_index = undefined;
   shortest_distance = undefined;
@@ -147,6 +149,7 @@ function clearSeedPoints() {
   drawnSeedPoints = [];
 }
 
+// do voronoi stuff
 function voronoiBS() {
   let delaunay = Delaunator.from(
     seedpoints,
@@ -164,24 +167,6 @@ function voronoiBS() {
     p = addPoint(centers[i].x, centers[i].y, 0xffffff, 3);
     voronoitodelete.push(p);
   }
-
-  /*for (let e = 0; e < numEdges; e++) {
-    if (e < halfedges[e]) {
-      const p = centers[triangleOfEdge(e)];
-      ö = triangleOfEdge(halfedges[e]);
-      const q = centers[triangleOfEdge(halfedges[e])];
-
-      let line = new PIXI.Graphics();
-      line.lineStyle(1, 0xffffff);
-      line.position.x = rectx + p.x;
-      line.position.y = recty + p.y;
-      nq_x = -p.x + q.x;
-      nq_y = -p.y + q.y;
-      line.lineTo(nq_x, nq_y);
-      thingys.push(line);
-      app.stage.addChild(line);
-    }
-  }*/
   drawCellColors(triangles, numEdges, centers, halfedges);
 }
 
@@ -192,6 +177,7 @@ function nextHalfedge(e) {
   return e % 3 === 2 ? e - 2 : e + 1;
 }
 
+// draw cells
 function drawCellColors(triangles, numEdges, centers, halfedges) {
   let seen = new Set(); // of region ids
   for (let e = 0; e < numEdges; e++) {
@@ -215,6 +201,7 @@ function drawCellColors(triangles, numEdges, centers, halfedges) {
   }
 }
 
+// get around a point
 function edgesAroundPoint(halfedges, start) {
   const result = [];
   let incoming = start;
@@ -226,6 +213,7 @@ function edgesAroundPoint(halfedges, start) {
   return result;
 }
 
+//calculate centeroids
 function calculateCentroids(points, delaunay) {
   const numTriangles = delaunay.halfedges.length / 3;
   let centroids = [];
@@ -243,6 +231,7 @@ function calculateCentroids(points, delaunay) {
   return centroids;
 }
 
+//generate fracture points
 function _getFracturePoints(number) {
   p = [
     { x: 0, y: 0 },
