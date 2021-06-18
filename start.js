@@ -54,7 +54,9 @@ window.onload = function () {
 
   document.getElementById("game").append(app.view);
 
-  app.ticker.speed = 0;
+  app.ticker.speed = 0.5;
+  app.ticker.minFPS = 144;
+  app.ticker.maxFPS = 145;
   app.loader.add("player", "pic/Player2.png");
   app.loader.add("enemy", "pic/enemy3.png");
   app.loader.add("background", "pic/Background1.png");
@@ -84,7 +86,9 @@ window.onload = function () {
   output_animation.innerHTML = slider_animation.value;
   slider_animation.oninput = function () {
     output_animation.innerHTML = this.value;
-    app.ticker.speed = this.value;
+    app.ticker.minFPS = this.value;
+    app.ticker.maxFPS = this.value + 1;
+    //app.ticker.speed = this.value;
   };
 };
 
@@ -116,7 +120,8 @@ function gameloop(delta) {
   //console.log("elapseMS ",app.ticker.elapsedMS );
   //console.log("FPS      ",app.ticker.FPS);
   //console.log("speed    ",app.ticker.speed);
-  if (app.ticker.speed == 0) return;
+  console.log(app.ticker.FPS);
+  if (app.ticker.minFPS == 0) return;
 
   if (gameloopactive) {
     directionline();
@@ -408,7 +413,8 @@ function createStartButton() {
     directionline();
 
     app.ticker.add(gameloop);
-    app.ticker.minFPS = 0;
+    //app.ticker.minFPS = 0;
+    app.ticker.minFPS = document.getElementById("animationControl").value;
 
     app.stage.removeChild(start_title);
     app.stage.removeChild(start_button);
