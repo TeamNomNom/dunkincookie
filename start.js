@@ -530,7 +530,7 @@ function addHeatmapButtonListener() {
 function addRK4ButtonListener() {
   if (useRK4) {
     document.getElementById("button-rk4").disabled = true;
-    document.getElementById("button-rk4").style.backgroundColor = "#4caf50";
+    document.getElementById("button-rk4").style.backgroundColor = "red";
   }
   document.getElementById("button-rk4").addEventListener("click", function () {
     useRK4 = true;
