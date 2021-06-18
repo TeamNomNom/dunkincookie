@@ -70,6 +70,11 @@ window.onload = function () {
   app.loader.add("gameOver", "pic/GameOver.png");
   app.loader.add("youwin", "pic/YouWin.png");
   app.loader.onComplete.add(Initialisation);
+  addVectorFieldButtonListener();
+  addTrajectorpointsButtonListener();
+  addRK4ButtonListener();
+  addEulerButtonListener();
+  addHeatmapButtonListener();
   app.loader.load();
 
   var slider_speed = document.getElementById("speedControl");
@@ -432,11 +437,6 @@ function createStartButton() {
     addSplinePoints();
     addPlayButtonListener();
     addClearbuttonListener();
-    addVectorFieldButtonListener();
-    addTrajectorpointsButtonListener();
-    addRK4ButtonListener();
-    addEulerButtonListener();
-    addHeatmapButtonListener();
     directionline();
 
     app.ticker.add(gameloop);
@@ -484,8 +484,8 @@ function addVectorFieldButtonListener() {
   document
     .getElementById("button-vectorfield")
     .addEventListener("click", function () {
-      if (!showVectorField) showVectorField = true;
-      else showVectorField = false;
+      showVectorField = !showVectorField;
+      directionline();
     });
 }
 
@@ -493,8 +493,7 @@ function addTrajectorpointsButtonListener() {
   document
     .getElementById("button-trajectorpoints")
     .addEventListener("click", function () {
-      if (!showTrajectories) showTrajectories = true;
-      else showTrajectories = false;
+      showTrajectories = !showTrajectories;
     });
 }
 
@@ -504,11 +503,11 @@ function addHeatmapButtonListener() {
   document
     .getElementById("button-heatmap")
     .addEventListener("click", function () {
+      heatmap = !heatmap;
+
       if (!heatmap) {
         button.style.backgroundColor = "#4caf50";
-        heatmap = true;
       } else {
-        heatmap = false;
         button.style.backgroundColor = "red";
       }
     });
