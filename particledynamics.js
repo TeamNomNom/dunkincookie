@@ -145,8 +145,13 @@ function detectCollision(listofallobjects, player, delta) {
 }
 
 function checkdistance(obj1, obj2) {
-  var x_1 = obj1.future_x;
-  var y_1 = obj1.future_y;
+  if (obj1 instanceof Enemy) {
+    var x_1 = obj1.future_x;
+    var y_1 = obj1.future_y;
+  } else if (obj1 instanceof Player || obj1 instanceof Goal) {
+    var x_1 = obj1.x;
+    var y_1 = obj1.y;
+  }
   if (obj2 instanceof Enemy) {
     var x_2 = obj2.future_x;
     var y_2 = obj2.future_y;
