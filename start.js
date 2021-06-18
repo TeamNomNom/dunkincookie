@@ -410,6 +410,7 @@ function createStartButton() {
     addTrajectorpointsButtonListener();
     addRK4ButtonListener();
     addEulerButtonListener();
+    addHeatmapButtonListener();
     directionline();
 
     app.ticker.add(gameloop);
@@ -471,7 +472,19 @@ function addTrajectorpointsButtonListener() {
     });
 }
 
+function addHeatmapButtonListener() {
+  document
+    .getElementById("button-heatmap")
+    .addEventListener("click", function () {
+      if (!heatmap) heatmap = true;
+      else heatmap = false;
+    });
+}
+
 function addRK4ButtonListener() {
+  if (useRK4) {
+    document.getElementById("button-rk4").disabled = true;
+  }
   document.getElementById("button-rk4").addEventListener("click", function () {
     useRK4 = true;
     document.getElementById("button-rk4").disabled = true;
@@ -480,6 +493,9 @@ function addRK4ButtonListener() {
 }
 
 function addEulerButtonListener() {
+  if (!useRK4) {
+    document.getElementById("button-euler").disabled = true;
+  }
   document
     .getElementById("button-euler")
     .addEventListener("click", function () {
