@@ -219,9 +219,9 @@ function handleplayer(current, player) {
     for (var i = 0; i < objects.length; i++) {
       if (objects[i] === current) {
         GameOver();
-        app.stage.removeChild(objects[i]);
-        objects.splice(i, 1);
-        i--;
+        //app.stage.removeChild(objects[i]);
+        //objects.splice(i, 1);
+        //i--;
       }
     }
   }
