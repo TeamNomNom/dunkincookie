@@ -150,7 +150,7 @@ function checkdistance(obj1, obj2) {
   if (obj2 instanceof Enemy) {
     var x_2 = obj2.future_x;
     var y_2 = obj2.future_y;
-  } else if (obj2 instanceof Player) {
+  } else if (obj2 instanceof Player || obj2 instanceof Goal) {
     var x_2 = obj2.x;
     var y_2 = obj2.y;
   }
@@ -219,9 +219,6 @@ function handleplayer(current, player) {
     for (var i = 0; i < objects.length; i++) {
       if (objects[i] === current) {
         GameOver();
-        //app.stage.removeChild(objects[i]);
-        //objects.splice(i, 1);
-        //i--;
       }
     }
   }

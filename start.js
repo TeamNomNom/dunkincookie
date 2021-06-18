@@ -1,5 +1,6 @@
 var app;
 var player;
+var goal;
 var playerSpeed = 30;
 
 var objects = [];
@@ -17,7 +18,6 @@ var markers = [];
 var visibleSplinePoints = [];
 var RENDEREDSPLINESTEPS = 30;
 
-var reachedGoal = false;
 var gameloopactive = false;
 
 //interpolation vars:
@@ -64,10 +64,11 @@ window.onload = function () {
   app.loader.add("start", "pic/Start1.png");
   app.loader.add("startOnClick", "pic/Start2.png");
   app.loader.add("circle", "pic/Circle_new.png");
-  app.loader.add("goal", "pic/Goal.png");
+  app.loader.add("goal", "pic/Goal2.png");
   app.loader.add("wallHori", "pic/WallHori.png");
   app.loader.add("wallVerti", "pic/WallVerti.png");
   app.loader.add("gameOver", "pic/GameOver.png");
+  app.loader.add("youwin", "pic/YouWin.png");
   app.loader.onComplete.add(Initialisation);
   app.loader.load();
 
@@ -120,7 +121,6 @@ function gameloop(delta) {
   //console.log("elapseMS ",app.ticker.elapsedMS );
   //console.log("FPS      ",app.ticker.FPS);
   //console.log("speed    ",app.ticker.speed);
-  console.log(app.ticker.FPS);
   if (app.ticker.minFPS == 0) return;
 
   if (gameloopactive) {
@@ -128,6 +128,11 @@ function gameloop(delta) {
     drawTrajectories();
     player.updatespeed();
     player.move(delta);
+
+    console.log(checkdistance(goal, player));
+    if (checkdistance(goal, player)) {
+      YouWin();
+    }
 
     for (var i = 0; i < objects.length; i++) {
       objects[i].move(objects, player, delta);
@@ -230,7 +235,7 @@ function createGoal() {
 
 //sets Marker (ControlPoint) to the Scene
 function setmarker() {
-  if (gameloopactive || reachedGoal) return;
+  if (gameloopactive) return;
   if (markers.length >= MARKERLIMIT) return;
   x = app.renderer.plugins.interaction.mouse.global.x;
   y = app.renderer.plugins.interaction.mouse.global.y;
@@ -343,8 +348,6 @@ function getPosFromArclengthWithDelta(goal) {
     let e = arclengthtable[i];
     if (e.totalLengthTillHere > goal) return e;
   }
-  gameloopactive = false;
-  reachedGoal = true;
   return arclengthtable[arclengthtable.length - 1];
 }
 
@@ -363,6 +366,15 @@ function GameOver() {
   bg.width = 1300;
   bg.height = 600;
   app.stage.addChild(bg);
+  app.ticker.started = false;
+}
+
+function YouWin() {
+  for (var c = app.stage.children.length - 1; c >= 0; c--) {
+    app.stage.removeChild(app.stage.children[c]);
+  }
+  win = new PIXI.Sprite(app.loader.resources["youwin"].texture);
+  app.stage.addChild(win);
   app.ticker.started = false;
 }
 
@@ -395,9 +407,9 @@ function createStartButton() {
     createPlayer();
 
     createEnemy();
-    createEnemy();
-    createEnemy();
-    createEnemy();
+    //createEnemy();
+    //createEnemy();
+    //createEnemy();
     createBlock();
     createGoal();
 
