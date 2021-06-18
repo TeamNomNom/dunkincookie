@@ -485,6 +485,13 @@ function addVectorFieldButtonListener() {
     .getElementById("button-vectorfield")
     .addEventListener("click", function () {
       showVectorField = !showVectorField;
+      if (!showVectorField) {
+        document.getElementById("button-vectorfield").style.backgroundColor =
+          "#4caf50";
+      } else {
+        document.getElementById("button-vectorfield").style.backgroundColor =
+          "red";
+      }
       directionline();
     });
 }
@@ -494,21 +501,28 @@ function addTrajectorpointsButtonListener() {
     .getElementById("button-trajectorpoints")
     .addEventListener("click", function () {
       showTrajectories = !showTrajectories;
+      if (!showTrajectories) {
+        document.getElementById(
+          "button-trajectorpoints"
+        ).style.backgroundColor = "#4caf50";
+      } else {
+        document.getElementById(
+          "button-trajectorpoints"
+        ).style.backgroundColor = "red";
+      }
     });
 }
 
 function addHeatmapButtonListener() {
-  var button = document.getElementById("button-heatmap");
-
   document
     .getElementById("button-heatmap")
     .addEventListener("click", function () {
       heatmap = !heatmap;
-
       if (!heatmap) {
-        button.style.backgroundColor = "#4caf50";
+        document.getElementById("button-heatmap").style.backgroundColor =
+          "#4caf50";
       } else {
-        button.style.backgroundColor = "red";
+        document.getElementById("button-heatmap").style.backgroundColor = "red";
       }
     });
 }
@@ -516,10 +530,13 @@ function addHeatmapButtonListener() {
 function addRK4ButtonListener() {
   if (useRK4) {
     document.getElementById("button-rk4").disabled = true;
+    document.getElementById("button-rk4").style.backgroundColor = "#4caf50";
   }
   document.getElementById("button-rk4").addEventListener("click", function () {
     useRK4 = true;
     document.getElementById("button-rk4").disabled = true;
+    document.getElementById("button-rk4").style.backgroundColor = "red";
+    document.getElementById("button-euler").style.backgroundColor = "#4caf50";
     document.getElementById("button-euler").disabled = false;
   });
 }
@@ -527,11 +544,14 @@ function addRK4ButtonListener() {
 function addEulerButtonListener() {
   if (!useRK4) {
     document.getElementById("button-euler").disabled = true;
+    document.getElementById("button-euler").style.backgroundColor = "#4caf50";
   }
   document
     .getElementById("button-euler")
     .addEventListener("click", function () {
       useRK4 = false;
+      document.getElementById("button-euler").style.backgroundColor = "red";
+      document.getElementById("button-rk4").style.backgroundColor = "#4caf50";
       document.getElementById("button-rk4").disabled = false;
       document.getElementById("button-euler").disabled = true;
     });
