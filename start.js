@@ -499,11 +499,18 @@ function addTrajectorpointsButtonListener() {
 }
 
 function addHeatmapButtonListener() {
+  var button = document.getElementById("button-heatmap");
+
   document
     .getElementById("button-heatmap")
     .addEventListener("click", function () {
-      if (!heatmap) heatmap = true;
-      else heatmap = false;
+      if (!heatmap) {
+        button.style.backgroundColor = "#4caf50";
+        heatmap = true;
+      } else {
+        heatmap = false;
+        button.style.backgroundColor = "red";
+      }
     });
 }
 
